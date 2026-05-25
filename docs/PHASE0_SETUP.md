@@ -11,15 +11,15 @@ Complete these steps before running cloud pipelines (Modules E–H). Work throug
 
 | Step | Description | Done? |
 |------|-------------|-------|
-| 0.1 | GitHub candidate repository | ☐ |
-| 0.2 | Azure subscription + `az login` | ☐ |
-| 0.3 | Azure DevOps org + project | ☐ |
-| 0.4 | Service connection `azure-migration-sc` (OIDC) | ☐ |
-| 0.5 | Link GitHub → ADO pipeline | ☐ |
-| 0.6 | Local toolchain + evidence | ☐ |
-| 0.6b | Key Vault variable group (after Module E) | ☐ |
-| 0.7 | Self-hosted agent pool | ☐ |
-| 0.8 | Environments `dev` / `prod` | ☐ |
+| 0.1 | GitHub candidate repository | ☑ |
+| 0.2 | Azure subscription + `az login` | ☑ |
+| 0.3 | Azure DevOps org + project | ☑ |
+| 0.4 | Service connection `azure-migration-sc` (OIDC) | ☑ |
+| 0.5 | Link GitHub → ADO pipeline | ☑ |
+| 0.6 | Local toolchain + evidence | ☑ |
+| 0.6b | Key Vault variable group (after Module E) | ☑ |
+| 0.7 | Self-hosted agent pool | ☑ |
+| 0.8 | Environments `dev` / `prod` | ☑ |
 
 ---
 
@@ -270,9 +270,10 @@ Optional KV secret refs later: `SPRING_DATASOURCE_PASSWORD` — never plain secr
 export AZP_URL="https://dev.azure.com/<YOUR_ORG>"
 export AZP_TOKEN="<PAT with Agent Pools Read & manage>"
 export AZP_POOL="ado-selfhosted-linux"
-cd self-hosted-agent && docker build -t ado-agent . && docker run -d \
+cd self-hosted-agent && docker build -t ado-selfhosted-agent . && docker run -d --name ado-agent \
   -e AZP_URL -e AZP_TOKEN -e AZP_POOL \
-  -v /var/run/docker.sock:/var/run/docker.sock ado-agent
+  -e AGENT_ALLOW_RUNASROOT=true \
+  -v /var/run/docker.sock:/var/run/docker.sock ado-selfhosted-agent
 ```
 
 3. Run smoke pipeline: `pipelines/azure-pipelines-agent-smoke.yml`
@@ -286,6 +287,33 @@ cd self-hosted-agent && docker build -t ado-agent . && docker run -d \
 2. Create **dev** (no approval)
 3. Create **prod** → **Approvals and checks** → add 1+ approvers
 4. Pipelines reference these in `pipelines/azure-pipelines.yml`
+
+### Prod App Service (after dev test)
+
+The prod **pipeline stage** uses `$(APP_SERVICE_PROD_NAME)` from variable group `petclinic-kv-secrets`.
+
+**For the first pipeline run (recommended):**
+
+- Run **Build → Scan → DeployDev** only; prod stage may fail until `APP_SERVICE_PROD_NAME` is set — that is acceptable for an initial test.
+- Or set `APP_SERVICE_PROD_NAME` = `mig-dev-aa87c040-petclinic` temporarily so prod deploys to the same App Service (demo only).
+
+**What the assessment actually requires:**
+
+| Requirement | Required for submission? |
+|-------------|-------------------------|
+| ADO environment **prod** with **approval** gate | **Yes** — Module N / release governance |
+| Separate Azure App Service for prod | **Recommended** for a realistic story, not blocking for first green dev deploy |
+| Second Terraform apply (`environment=prod` in `terraform.tfvars`) | **Optional now** — creates a second ACR + App Service in the same RG; do this after dev pipeline succeeds |
+
+When ready for a dedicated prod App Service:
+
+```bash
+cd iac/terraform
+cp terraform.tfvars terraform.tfvars.prod
+# Edit: environment = "prod"
+terraform apply -var-file=terraform.tfvars.prod
+# Add APP_SERVICE_PROD_NAME from new terraform output to petclinic-kv-secrets
+```
 
 ---
 
@@ -302,10 +330,11 @@ cd self-hosted-agent && docker build -t ado-agent . && docker run -d \
 
 ## What’s next
 
-| When Phase 0 complete | Action |
-|------------------------|--------|
-| 0.4–0.6 done | Module E — [`iac/terraform/deploy.sh`](../iac/terraform/deploy.sh) → RG `rg-migration-assessement` |
-| After Key Vault | 0.6b variable group |
-| 0.7–0.8 done | Run `pipelines/azure-pipelines.yml` (build/scan/deploy) |
+| Action | Details |
+|--------|---------|
+| Run main pipeline | [`pipelines/azure-pipelines.yml`](../pipelines/azure-pipelines.yml) — Build → Scan → DeployDev |
+| Optional prod stack | Second `terraform apply` with `environment=prod`; set `APP_SERVICE_PROD_NAME` |
+| Modules A–D local | Docker compose, pipeline inventory, Jira analyzer (can run anytime) |
+| Presentation | Screenshots from pipeline runs → `docs/final-presentation-outline.md` |
 
 See [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) for full assessment deliverables.

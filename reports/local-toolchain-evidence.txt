@@ -2,12 +2,39 @@
 OK  git: git version 2.54.0
 OK  python3: Python 3.9.6
 OK  az: azure-cli                         2.86.0
-OK  terraform: Terraform v1.15.4
+OK  terraform: Terraform v1.9.8
 OK  kubectl: Client Version: v1.36.1
-OK  helm: v4.2.0+g0646808
+OK  helm: v3.16.3+gcfd0749
 OK  trivy: Version: 0.70.0
 OK  docker: Docker version 29.4.3, build 055a478
 OK  java: openjdk version "17.0.19" 2026-04-21
 OK  mvn: Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
 OK  docker daemon: running
 === Done ===
+
+# Phase 0.6 — Local toolchain: COMPLETE (verified 2026-05-26)
+# Command: ./scripts/check-prerequisites.sh | tee reports/local-toolchain-evidence.txt
+
+# Azure CLI login (Phase 0.2)
+# Subscription: Azure subscription 1
+# Subscription ID: c09dd6ef-0111-4bf0-a0d4-3600979a0c7d
+# Verified: az login completed successfully
+
+# Install notes (macOS Homebrew)
+# - Homebrew: /opt/homebrew (eval "$(/opt/homebrew/bin/brew shellenv)" in ~/.zprofile)
+# - Terraform: hashicorp/tap (brew install hashicorp/tap/terraform)
+# - Java: openjdk@17 on PATH via ~/.zprofile
+# - Docker: brew install --cask docker; Docker Desktop running
+
+# Phase 0 progress (all steps complete)
+# 0.1 GitHub: https://github.com/debibrat2010/devops-migration-assessment
+# 0.2 Azure subscription + az login
+# 0.3 ADO org + project
+# 0.4 Service connection azure-migration-sc (OIDC, verified)
+# 0.5 ADO pipeline from GitHub YAML
+# 0.6 Local toolchain (this file)
+# 0.6b Variable group petclinic-kv-secrets
+# 0.7 Self-hosted pool ado-selfhosted-linux + smoke pipeline
+# 0.8 Environments dev + prod (prod approvals)
+
+# Next: Run pipelines/azure-pipelines.yml — dev deploy first; prod App Service optional after dev test

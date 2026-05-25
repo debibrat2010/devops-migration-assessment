@@ -15,6 +15,7 @@ cd self-hosted-agent
 docker build -t ado-selfhosted-agent .
 docker run -d --name ado-agent \
   -e AZP_URL -e AZP_TOKEN -e AZP_POOL \
+  -e AGENT_ALLOW_RUNASROOT=true \
   -v /var/run/docker.sock:/var/run/docker.sock \
   ado-selfhosted-agent
 ```

@@ -1,22 +1,67 @@
-# Azure setup evidence — Phase 0 / IaC
+# Azure setup evidence — Phase 0 (complete)
 
+Last updated: 2026-05-26
+
+## 0.1 GitHub candidate repository
+GitHub repo URL: https://github.com/debibrat2010/devops-migration-assessment
+Branch: main
+Status: Pushed (assessment code + docs + pipelines + IaC)
+
+## 0.2 Azure subscription
 Subscription name: Azure subscription 1
 Subscription ID: c09dd6ef-0111-4bf0-a0d4-3600979a0c7d
-Resource group (all assessment resources): rg-migration-assessement
+Tenant ID: d6f24258-275d-4bbf-8f31-c38c6d96275a
 Region: southeastasia
+az login: Verified
 
-Azure DevOps org URL:
-Project name:
+## 0.3 Azure DevOps
+Azure DevOps org URL: https://dev.azure.com/debibrat2021/migration-assessment/
+Project name: migration-assessment
+
+## 0.4 Service connection
 Service connection name: azure-migration-sc
-Service connection scope: subscription or rg-migration-assessement
-Verify status:
+Connection type: Workload Identity Federation (OIDC) — Automatic wizard
+Service connection scope: Resource group rg-migration-assessement (or subscription)
+Verify status: Succeeded
 
+## 0.5 Pipeline linked to GitHub
+ADO pipeline linked: Yes
+Pipeline YAML path: /pipelines/azure-pipelines.yml
+Source repo: debibrat2010/devops-migration-assessment
+Smoke pipeline YAML: /pipelines/azure-pipelines-agent-smoke.yml
+
+## 0.6b Variable group
+Variable group name: petclinic-kv-secrets
+Variables configured:
+  ACR_LOGIN_SERVER = acrmigdevaa87c040.azurecr.io
+  APP_SERVICE_DEV_NAME = mig-dev-aa87c040-petclinic
+Key Vault (optional link): kvmigdevaa87c040
+ACR Docker service connection (optional): acr-migration-sc
+
+## 0.7 Self-hosted agent
 Agent pool name: ado-selfhosted-linux
+Agent container: ado-agent (Docker on Mac, ARM64 image)
+AGENT_ALLOW_RUNASROOT: true (required for Docker socket in container)
+Smoke pipeline: azure-pipelines-agent-smoke.yml — succeeded
+Agent evidence log: reports/agent-run-evidence.txt (add run URL if saved)
 
-# Populated after iac/terraform apply (reports/terraform-outputs.json)
+## 0.8 Environments
+Environment dev: Created — no approval required
+Environment prod: Created — approval check configured
+
+## Module E — Terraform (completed before / during Phase 0)
+Resource group: rg-migration-assessement
+IaC tool: Terraform (iac/terraform/)
 ACR login server: acrmigdevaa87c040.azurecr.io
 ACR name: acrmigdevaa87c040
 Key Vault name: kvmigdevaa87c040
-App Service name (dev): mig-dev-aa87c040-petclinic
+App Service (dev): mig-dev-aa87c040-petclinic
 App Service URL: https://mig-dev-aa87c040-petclinic.azurewebsites.net
-App Service name (prod): (optional second terraform apply with environment=prod)
+
+## Prod App Service — deferred until after dev pipeline test
+See docs/PHASE0_SETUP.md section "Prod App Service (after dev test)".
+Assessment requires prod *environment* with approval (Module N) — not necessarily a second Azure App Service for first pipeline run.
+Variable APP_SERVICE_PROD_NAME: not set yet (prod deploy stage will skip/fail until added).
+
+## Phase 0 status: COMPLETE
+Ready for: first run of pipelines/azure-pipelines.yml (Build → Scan → DeployDev), then optional second Terraform stack for prod App Service.

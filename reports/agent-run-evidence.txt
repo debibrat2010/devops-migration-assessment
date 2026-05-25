@@ -1,0 +1,8 @@
+# Self-hosted agent smoke test
+
+Pool: ado-selfhosted-linux
+Agent container: ado-agent
+Image: ado-selfhosted-agent (ARM64 / Apple Silicon fixes in Dockerfile)
+
+Smoke pipeline: pipelines/azure-pipelines-agent-smoke.yml
+Status: Succeeded

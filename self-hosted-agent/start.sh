@@ -6,11 +6,10 @@ set -euo pipefail
 : "${AZP_POOL:=ado-selfhosted-linux}"
 : "${AZP_AGENT_NAME:=docker-agent-$(hostname)}"
 
-if [ ! -f /azp/agent/config.sh ]; then
-  mkdir -p /azp/agent
-  cd /azp/agent
-  curl -sSL -o agent.tar.gz "https://vstsagentpackage.azureedge.net/agent/${AGENT_VERSION:-3.232.0}/vsts-agent-linux-x64-${AGENT_VERSION:-3.232.0}.tar.gz"
-  tar -xzf agent.tar.gz && rm agent.tar.gz
+cd /azp/agent
+
+# Agent binaries are pre-installed in the image; only register once per container volume
+if [ ! -f .agent ]; then
   ./config.sh --unattended \
     --url "$AZP_URL" \
     --auth pat \
@@ -21,5 +20,4 @@ if [ ! -f /azp/agent/config.sh ]; then
     --replace
 fi
 
-cd /azp/agent
 exec ./run.sh
