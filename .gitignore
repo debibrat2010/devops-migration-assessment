@@ -39,7 +39,6 @@ reports/trivy-*.json
 reports/*.log
 reports/terraform-outputs.json
 iac/terraform/tfplan
-iac/terraform/.terraform.lock.hcl
 
 # Azure local
 .azure/

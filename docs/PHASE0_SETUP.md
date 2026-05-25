@@ -154,9 +154,12 @@ Verify status: Succeeded
 
 ```bash
 cd /Users/debi/migration-assessment
-git remote -v
+git remote add origin git@github.com:<YOUR_ORG>/devops-migration-assessment.git   # once
+git add -A && git commit -m "Initial assessment submission"   # skip if already committed
 git push -u origin main
 ```
+
+`src refspec main does not match any` means **no commit yet** — run `git commit` before `git push`.
 
 2. Azure DevOps → **Pipelines** → **Create pipeline** (or **New pipeline**)
 3. **GitHub**
@@ -245,8 +248,16 @@ curl -s http://localhost:8080/actuator/health
 After `iac/terraform/deploy.sh` creates Key Vault:
 
 1. ADO → **Pipelines → Library → + Variable group**
-2. Link to Key Vault (e.g. `kv-migration-dev-<suffix>`)
-3. Add secret references: `SPRING_DATASOURCE_PASSWORD`, `ACR_LOGIN_SERVER`, `APP_SERVICE_DEV_NAME` — never plain secrets in YAML
+2. Name: `petclinic-kv-secrets` (must match `pipelines/azure-pipelines.yml`)
+3. Link to Key Vault from Terraform output, e.g. `kvmigdevaa87c040`
+4. Add variables (plain or KV-linked):
+
+| Variable | Example value |
+|----------|----------------|
+| `ACR_LOGIN_SERVER` | `acrmigdevaa87c040.azurecr.io` |
+| `APP_SERVICE_DEV_NAME` | `mig-dev-aa87c040-petclinic` |
+
+Optional KV secret refs later: `SPRING_DATASOURCE_PASSWORD` — never plain secrets in YAML
 
 ---
 
