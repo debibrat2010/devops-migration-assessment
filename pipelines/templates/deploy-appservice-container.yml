@@ -1,0 +1,19 @@
+parameters:
+  - name: azureSubscription
+    type: string
+    default: 'azure-migration-sc'
+  - name: appName
+    type: string
+  - name: imageName
+    type: string
+  - name: resourceGroup
+    type: string
+
+steps:
+  - task: AzureWebAppContainer@1
+    displayName: 'Deploy to App Service for Containers'
+    inputs:
+      azureSubscription: '${{ parameters.azureSubscription }}'
+      appName: '${{ parameters.appName }}'
+      resourceGroupName: '${{ parameters.resourceGroup }}'
+      containers: '${{ parameters.imageName }}'

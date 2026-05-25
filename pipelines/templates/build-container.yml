@@ -1,0 +1,43 @@
+parameters:
+  - name: dockerfilePath
+    type: string
+    default: 'container/Dockerfile'
+  - name: imageRepository
+    type: string
+    default: 'petclinic'
+  - name: containerRegistry
+    type: string
+    default: '$(acrLoginServer)'
+  - name: tag
+    type: string
+    default: '$(Build.BuildId)'
+
+steps:
+  - task: Maven@4
+    displayName: 'Maven test (hosted fallback)'
+    inputs:
+      mavenPomFile: 'apps/spring-petclinic/pom.xml'
+      goals: 'test'
+      jdkVersionOption: '1.17'
+    condition: eq(variables['Agent.OS'], 'Linux_NT')
+
+  - task: Docker@2
+    displayName: 'Build container image'
+    inputs:
+      command: build
+      dockerfile: '${{ parameters.dockerfilePath }}'
+      buildContext: '$(Build.SourcesDirectory)'
+      repository: '${{ parameters.imageRepository }}'
+      tags: |
+        ${{ parameters.tag }}
+        $(Build.SourceVersion)
+
+  - task: Docker@2
+    displayName: 'Push to ACR'
+    inputs:
+      command: push
+      containerRegistry: '$(acrServiceConnection)'
+      repository: '${{ parameters.imageRepository }}'
+      tags: |
+        ${{ parameters.tag }}
+        $(Build.SourceVersion)

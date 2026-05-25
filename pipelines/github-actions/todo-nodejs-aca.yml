@@ -1,0 +1,25 @@
+# Node/Mongo secondary workload — deploy pattern for Azure Container Apps
+name: Todo Node ACA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/todo-nodejs-mongo/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: |
+          docker build -t todo-api:${{ github.sha }} apps/todo-nodejs-mongo/src/api
+      - name: Note
+        run: |
+          echo "Full ACA deploy requires az containerapp up — see upstream todo-nodejs-mongo-aca README"
+          echo "Primary assessment deploy target for Node: Azure Container Apps + MongoDB Atlas"

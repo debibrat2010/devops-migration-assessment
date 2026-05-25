@@ -1,0 +1,67 @@
+# Module D — Local ingress/egress simulation
+# Usage: docker compose -f container/docker-compose.local.yml up --build
+# Ingress: http://localhost:8080 (nginx -> app)
+# Direct app (debug): http://localhost:18080
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: petclinic
+      POSTGRES_USER: petclinic
+      POSTGRES_PASSWORD: petclinic
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petclinic -d petclinic"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend
+
+  mock-egress:
+    build:
+      context: mock-egress
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  app:
+    build:
+      context: ..
+      dockerfile: container/Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/petclinic
+      POSTGRES_USER: petclinic
+      POSTGRES_PASS: petclinic
+      PETCLINIC_EXTERNAL_API_URL: http://mock-egress:9000/api/v1/status
+      SERVER_PORT: "8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mock-egress:
+        condition: service_healthy
+    networks:
+      - backend
+    ports:
+      - "18080:8080"
+
+  ingress:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
+    networks:
+      - backend
+      - frontend
+
+networks:
+  frontend:
+  backend:

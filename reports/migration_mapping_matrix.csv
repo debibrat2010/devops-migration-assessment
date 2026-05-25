@@ -1,0 +1,9 @@
+legacy_tool,legacy_concept,azure_devops,github_actions,jenkins_cloud,decision
+Jenkins,pipeline { agent { label } },pool: name / demands,runs-on: self-hosted,kubernetes agent pod template,Migrate to ADO
+Jenkins,credentials('id'),Variable group linked to Key Vault,secrets / OIDC,Credentials plugin + K8s secrets,Migrate to ADO
+Jenkins,input message approval,Environment approval checks,environment protection rules,input step (retain temporarily),Migrate to ADO
+Bamboo,plan > stage > job > task,stage > job > step,job > step,declarative stages,Migrate to ADO
+Bamboo,deployment project / environment,YAML deployment job + environment,environment: production,Deploy plugin,Migrate to ADO
+GitLab,tags: onprem-linux-runner,pool: ado-selfhosted-linux,"runs-on: [self-hosted, linux]",Static agent or K8s,Migrate to ADO
+GitLab,only/needs/rules,conditions / dependsOn,if / needs,when { } blocks,Migrate to ADO
+All,SSH VM deploy,AzureWebAppContainer@1 / ACA deploy,azure/webapps-deploy or az containerapp,Retire SSH — container platform,Retire pattern

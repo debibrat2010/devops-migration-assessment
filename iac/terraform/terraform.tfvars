@@ -1,0 +1,4 @@
+subscription_id     = "c09dd6ef-0111-4bf0-a0d4-3600979a0c7d"
+resource_group_name = "rg-migration-assessement"
+location            = "southeastasia"
+environment         = "dev"

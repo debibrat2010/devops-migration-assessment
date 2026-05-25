@@ -1,0 +1,45 @@
+# Secrets and local env
+.env
+.env.*
+*.pem
+*.key
+agent/.agent
+**/secrets/
+
+# Build outputs
+**/target/
+**/node_modules/
+**/__pycache__/
+*.class
+*.jar
+!**/mvnw.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+
+# Upstream clones (reference only; apps/ is submission copy)
+upstream/
+
+# Agent work dir
+self-hosted-agent/_work/
+self-hosted-agent/.agent/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+
+# Reports generated at runtime (keep committed samples; ignore large temp)
+reports/trivy-*.json
+reports/*.log
+reports/terraform-outputs.json
+iac/terraform/tfplan
+iac/terraform/.terraform.lock.hcl
+
+# Azure local
+.azure/

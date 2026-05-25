@@ -1,0 +1,91 @@
+# Simulated Bamboo YAML Specs — PetClinic plan
+# Migration target: pipelines/legacy-migration/bamboo-to-ado.yml
+
+---
+version: 2
+plan:
+  project-key: DEVOPS
+  key: PETCLINIC
+  name: PetClinic Monolith Build and Deploy
+  description: On-prem Bamboo plan for Spring PetClinic
+
+stages:
+  - Build-and-Test:
+      manual: false
+      jobs:
+        - Maven-Build
+  - Package-and-Publish:
+      manual: false
+      jobs:
+        - Docker-Publish
+  - Deploy:
+      manual: true
+      jobs:
+        - SSH-Deploy-Prod
+
+Maven-Build:
+  tasks:
+    - checkout:
+        force-clean-build: true
+    - script:
+        interpreter: SHELL
+        scripts:
+          - ./mvnw -B clean verify
+    - test-parser:
+        type: junit
+        test-results: target/surefire-reports/*.xml
+  artifacts:
+    - name: petclinic-jar
+      location: target
+      pattern: '*.jar'
+      shared: true
+      required: true
+  requirements:
+    - system.builder.maven.Maven 3
+    - system.jdk.JDK 17
+
+Docker-Publish:
+  tasks:
+    - checkout:
+        force-clean-build: false
+    - script:
+        interpreter: SHELL
+        scripts:
+          - docker login registry.corp.example -u $bamboo_registry_user -p $bamboo_registry_password
+          - docker build -t registry.corp.example/petclinic:$bamboo_buildNumber .
+          - docker push registry.corp.example/petclinic:$bamboo_buildNumber
+  artifact-subscriptions:
+    - artifact: petclinic-jar
+      destination: target
+
+SSH-Deploy-Prod:
+  tasks:
+    - script:
+        interpreter: SHELL
+        scripts:
+          - |
+            ssh deploy@vm-prod-01.corp.example "
+              docker pull registry.corp.example/petclinic:$bamboo_buildNumber
+              docker compose -f /opt/petclinic/docker-compose.yml up -d
+            "
+  requirements:
+    - agent: deploy-agent-pool-prod
+
+variables:
+  - name: bamboo_registry_user
+    value: bamboo-svc
+  - name: bamboo_registry_password
+    value: '${bamboo.secret.registry-password}'
+  - name: TARGET_ENV
+    value: prod
+
+linked-repositories:
+  - spring-petclinic-git
+
+deployment:
+  name: PetClinic Production
+  environment: production
+  tasks:
+    - clean
+    - artifact-download
+    - script: echo Deploying build ${bamboo.buildNumber}

@@ -1,0 +1,66 @@
+# Module L — GitLab CI converted to Azure DevOps YAML
+# Maps: stages -> stages, tags onprem-linux-runner -> pool ado-selfhosted-linux
+# Maps: CI_REGISTRY_* -> ACR service connection + variable group
+
+trigger:
+  branches:
+    include: [main, develop]
+
+pool:
+  name: ado-selfhosted-linux
+
+stages:
+  - stage: build
+    jobs:
+      - job: compile
+        steps:
+          - script: ./mvnw -B -DskipTests compile
+            workingDirectory: apps/spring-petclinic
+
+  - stage: test
+    dependsOn: build
+    jobs:
+      - job: unit_test
+        steps:
+          - script: ./mvnw -B test
+            workingDirectory: apps/spring-petclinic
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: '**/TEST-*.xml'
+
+  - stage: package
+    dependsOn: test
+    jobs:
+      - job: docker_build
+        steps:
+          - template: ../templates/build-container.yml
+
+  - stage: deploy
+    dependsOn: package
+    jobs:
+      - deployment: deploy_dev
+        environment: development
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: ../templates/deploy-appservice-container.yml
+                  parameters:
+                    appName: '$(APP_SERVICE_DEV_NAME)'
+                    resourceGroup: 'rg-migration-assessement'
+                    imageName: '$(acrLoginServer)/petclinic:$(Build.BuildId)'
+                - template: ../templates/smoke-test.yml
+
+      - deployment: deploy_prod
+        environment: production
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: ../templates/deploy-appservice-container.yml
+                  parameters:
+                    appName: '$(APP_SERVICE_PROD_NAME)'
+                    resourceGroup: 'rg-migration-assessement'
+                    imageName: '$(acrLoginServer)/petclinic:$(Build.BuildId)'

@@ -1,0 +1,5 @@
+project_key,workflow_name,custom_status_count,transition_count,has_approval_step
+PET,Pet Development Workflow,8,24,true
+DEVOPS,Platform Workflow,6,18,false
+REL,Change Approval Workflow,5,12,true
+INFRA,Service Desk Workflow,4,10,false

@@ -1,0 +1,28 @@
+parameters:
+  - name: azureSubscription
+    type: string
+    default: 'azure-migration-sc'
+  - name: resourceGroup
+    type: string
+  - name: clusterName
+    type: string
+  - name: imageTag
+    type: string
+    default: '$(Build.BuildId)'
+
+steps:
+  - task: Kubernetes@1
+    displayName: 'Deploy to AKS'
+    inputs:
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: '${{ parameters.azureSubscription }}'
+      azureResourceGroup: '${{ parameters.resourceGroup }}'
+      kubernetesCluster: '${{ parameters.clusterName }}'
+      command: 'apply'
+      useConfigurationFile: true
+      configuration: 'k8s/deployment.yaml'
+
+  - script: |
+      kubectl set image deployment/petclinic petclinic=$(acrLoginServer)/petclinic:${{ parameters.imageTag }} -n petclinic
+      kubectl rollout status deployment/petclinic -n petclinic --timeout=300s
+    displayName: 'Update image and wait for rollout'

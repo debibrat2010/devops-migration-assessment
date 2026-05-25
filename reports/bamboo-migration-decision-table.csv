@@ -1,0 +1,5 @@
+pipeline,current_tool,recommendation,rationale,timeline
+petclinic-monolith,Bamboo,Migrate to Azure DevOps,SSH deploy pattern retired; templates exist in pipelines/,Wave 1
+legacy-nightly-tests,Bamboo,Retire,Duplicate coverage in ADO PR validation,Wave 2
+experimental-gha-poc,Bamboo,Migrate to GitHub Actions,Team standardizing on GHA for OSS,Wave 3
+shared-library-build,Bamboo,Keep temporarily,Depends on Bamboo specs not yet ported,Wave 4

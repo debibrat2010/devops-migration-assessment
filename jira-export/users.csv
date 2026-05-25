@@ -1,0 +1,8 @@
+username,display_name,email,active,last_login_days_ago
+jsmith,Jane Smith,jane.smith@corp.example,true,2
+adevops,Alex DevOps,alex.devops@corp.example,true,1
+release-mgr,Release Manager,release@corp.example,true,5
+inactive1,Former Employee,former@corp.example,false,400
+inactive2,Contractor End,contractor@corp.example,false,180
+svc-jenkins,Jenkins Service,svc-jenkins@corp.example,true,0
+svc-bamboo,Bamboo Service,svc-bamboo@corp.example,true,0

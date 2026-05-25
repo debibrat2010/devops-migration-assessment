@@ -1,0 +1,13 @@
+=== DevOps Assessment — prerequisite check ===
+OK  git: git version 2.54.0
+OK  python3: Python 3.9.6
+OK  az: azure-cli                         2.86.0
+OK  terraform: Terraform v1.15.4
+OK  kubectl: Client Version: v1.36.1
+OK  helm: v4.2.0+g0646808
+OK  trivy: Version: 0.70.0
+OK  docker: Docker version 29.4.3, build 055a478
+OK  java: openjdk version "17.0.19" 2026-04-21
+OK  mvn: Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+OK  docker daemon: running
+=== Done ===

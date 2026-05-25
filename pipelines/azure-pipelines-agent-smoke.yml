@@ -1,0 +1,17 @@
+# Module F — Smoke test for self-hosted agent pool
+trigger: none
+
+pool:
+  name: ado-selfhosted-linux
+
+steps:
+  - script: |
+      echo "Agent.Name=$(Agent.Name)"
+      echo "Agent.MachineName=$(Agent.MachineName)"
+      echo "Agent.OS=$(Agent.OS)"
+      java -version
+      mvn -version || true
+      docker --version || echo "Docker not on PATH"
+      az version || echo "Azure CLI optional locally"
+      trivy --version || echo "Trivy optional"
+    displayName: 'Verify agent capabilities'

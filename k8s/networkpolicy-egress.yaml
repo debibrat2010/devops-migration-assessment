@@ -1,0 +1,46 @@
+# Module O — Controlled egress from PetClinic pods
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: petclinic-egress
+  namespace: petclinic
+spec:
+  podSelector:
+    matchLabels:
+      app: petclinic
+  policyTypes:
+    - Egress
+  egress:
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+    # PostgreSQL (private endpoint)
+    - to:
+        - ipBlock:
+            cidr: 10.0.1.0/24
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Azure Key Vault / ACR / Monitor via private endpoint subnet
+    - to:
+        - ipBlock:
+            cidr: 10.0.2.0/24
+      ports:
+        - protocol: TCP
+          port: 443
+    # External partner API (allowlisted)
+    - to:
+        - ipBlock:
+            cidr: 203.0.113.50/32
+      ports:
+        - protocol: TCP
+          port: 443
+
+# Documented allowed destinations (enterprise egress register):
+# - postgres.internal:5432
+# - *.vault.azure.net:443
+# - *.azurecr.io:443
+# - api.partner.example:443

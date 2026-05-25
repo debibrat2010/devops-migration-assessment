@@ -1,0 +1,155 @@
+{
+  "summary": {
+    "total_pipelines": 3,
+    "high_risk_count": 3,
+    "tools": [
+      "Bamboo",
+      "GitLab",
+      "Jenkins"
+    ]
+  },
+  "pipelines": [
+    {
+      "id": "jenkins-petclinic-001",
+      "tool": "Jenkins",
+      "name": "PetClinic Monolith Pipeline",
+      "source_control": "Git (multibranch/SCM)",
+      "runner_agent": "linux-build-farm-01 (static label)",
+      "build_tool": "Maven (mvnw)",
+      "artifact_store": "Nexus (corp) + local archiveArtifacts",
+      "deployment_method": "Docker push + SSH docker run on VM",
+      "approvals": "Manual input for prod stage",
+      "risk_level": "High",
+      "file_path": "legacy-ci/jenkins/Jenkinsfile",
+      "secrets_refs": [
+        "petclinic-ssh-deploy-key",
+        "slack-webhook-token"
+      ],
+      "target_environments": [
+        "dev",
+        "prod",
+        "staging"
+      ],
+      "risk_notes": [
+        "SSH deploy to VM \u2014 migrate to container platform",
+        "Manual input gate \u2014 map to ADO environment approval",
+        "Credential bindings: petclinic-ssh-deploy-key, slack-webhook-token"
+      ]
+    },
+    {
+      "id": "bamboo-petclinic-001",
+      "tool": "Bamboo",
+      "name": "PetClinic Monolith Build and Deploy",
+      "source_control": "Linked repository spring-petclinic-git",
+      "runner_agent": "Maven agents + deploy-agent-pool-prod",
+      "build_tool": "Maven 3 / JDK 17",
+      "artifact_store": "Bamboo artifacts + corporate Docker registry",
+      "deployment_method": "Docker publish + SSH docker compose on prod VM",
+      "approvals": "Manual Deploy stage",
+      "risk_level": "High",
+      "file_path": "legacy-ci/bamboo/bamboo-specs.yaml",
+      "secrets_refs": [
+        ""
+      ],
+      "target_environments": [
+        "production"
+      ],
+      "risk_notes": [
+        "Bamboo deployment project linked to SSH VM deploy",
+        "Shared registry credentials in plan variables"
+      ]
+    },
+    {
+      "id": "gitlab-petclinic-001",
+      "tool": "GitLab",
+      "name": "PetClinic GitLab CI",
+      "source_control": "GitLab project registry",
+      "runner_agent": "onprem-linux-runner (self-managed)",
+      "build_tool": "Maven + Docker",
+      "artifact_store": "GitLab Container Registry",
+      "deployment_method": "SSH docker run per environment",
+      "approvals": "when: manual on deploy jobs",
+      "risk_level": "High",
+      "file_path": "legacy-ci/gitlab/.gitlab-ci.yml",
+      "secrets_refs": [
+        "CI_REGISTRY_USER",
+        "CI_REGISTRY_PASSWORD"
+      ],
+      "target_environments": [
+        "development",
+        "production"
+      ],
+      "risk_notes": [
+        "Self-managed runner tags: onprem-linux-runner",
+        "Manual deploy jobs \u2014 ADO environment approvals",
+        "DinD required \u2014 ensure self-hosted agent supports privileged mode"
+      ]
+    }
+  ],
+  "migration_mapping": [
+    {
+      "legacy_tool": "Jenkins",
+      "legacy_concept": "pipeline { agent { label } }",
+      "azure_devops": "pool: name / demands",
+      "github_actions": "runs-on: self-hosted",
+      "jenkins_cloud": "kubernetes agent pod template",
+      "decision": "Migrate to ADO"
+    },
+    {
+      "legacy_tool": "Jenkins",
+      "legacy_concept": "credentials('id')",
+      "azure_devops": "Variable group linked to Key Vault",
+      "github_actions": "secrets / OIDC",
+      "jenkins_cloud": "Credentials plugin + K8s secrets",
+      "decision": "Migrate to ADO"
+    },
+    {
+      "legacy_tool": "Jenkins",
+      "legacy_concept": "input message approval",
+      "azure_devops": "Environment approval checks",
+      "github_actions": "environment protection rules",
+      "jenkins_cloud": "input step (retain temporarily)",
+      "decision": "Migrate to ADO"
+    },
+    {
+      "legacy_tool": "Bamboo",
+      "legacy_concept": "plan > stage > job > task",
+      "azure_devops": "stage > job > step",
+      "github_actions": "job > step",
+      "jenkins_cloud": "declarative stages",
+      "decision": "Migrate to ADO"
+    },
+    {
+      "legacy_tool": "Bamboo",
+      "legacy_concept": "deployment project / environment",
+      "azure_devops": "YAML deployment job + environment",
+      "github_actions": "environment: production",
+      "jenkins_cloud": "Deploy plugin",
+      "decision": "Migrate to ADO"
+    },
+    {
+      "legacy_tool": "GitLab",
+      "legacy_concept": "tags: onprem-linux-runner",
+      "azure_devops": "pool: ado-selfhosted-linux",
+      "github_actions": "runs-on: [self-hosted, linux]",
+      "jenkins_cloud": "Static agent or K8s",
+      "decision": "Migrate to ADO"
+    },
+    {
+      "legacy_tool": "GitLab",
+      "legacy_concept": "only/needs/rules",
+      "azure_devops": "conditions / dependsOn",
+      "github_actions": "if / needs",
+      "jenkins_cloud": "when { } blocks",
+      "decision": "Migrate to ADO"
+    },
+    {
+      "legacy_tool": "All",
+      "legacy_concept": "SSH VM deploy",
+      "azure_devops": "AzureWebAppContainer@1 / ACA deploy",
+      "github_actions": "azure/webapps-deploy or az containerapp",
+      "jenkins_cloud": "Retire SSH \u2014 container platform",
+      "decision": "Retire pattern"
+    }
+  ]
+}

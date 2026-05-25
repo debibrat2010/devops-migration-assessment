@@ -1,0 +1,96 @@
+// Simulated on-prem Jenkins pipeline — PetClinic monolith
+// Migration target: Azure DevOps YAML (pipelines/azure-pipelines.yml)
+
+pipeline {
+    agent { label 'linux-build-farm-01' }
+
+    environment {
+        NEXUS_URL = 'https://nexus.corp.example/repository/maven-releases/'
+        DOCKER_REGISTRY = 'registry.corp.example:5000'
+        DEPLOY_HOST = credentials('petclinic-ssh-deploy-key')
+        SLACK_WEBHOOK = credentials('slack-webhook-token')
+        ARTIFACT_NAME = 'spring-petclinic'
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timeout(time: 45, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        choice(name: 'TARGET_ENV', choices: ['dev', 'staging', 'prod'], description: 'Deployment target')
+        booleanParam(name: 'SKIP_TESTS', defaultValue: false)
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build & Unit Test') {
+            when { expression { return !params.SKIP_TESTS } }
+            steps {
+                sh './mvnw -B clean verify'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Publish to Nexus') {
+            steps {
+                sh './mvnw -B deploy -DskipTests -DaltDeploymentRepository=nexus::default::' + env.NEXUS_URL
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    def image = "${DOCKER_REGISTRY}/petclinic:${env.BUILD_NUMBER}"
+                    sh "docker build -t ${image} -f Dockerfile ."
+                    sh "docker push ${image}"
+                }
+            }
+        }
+
+        stage('Deploy via SSH') {
+            when {
+                expression { params.TARGET_ENV == 'prod' }
+            }
+            steps {
+                input message: 'Approve production deployment?', ok: 'Deploy'
+                sh """
+                    ssh -o StrictHostKeyChecking=no deploy@${DEPLOY_HOST} \
+                      'docker pull ${DOCKER_REGISTRY}/petclinic:${env.BUILD_NUMBER} && \
+                       docker stop petclinic || true && \
+                       docker run -d --name petclinic -p 8080:8080 \
+                         -e SPRING_PROFILES_ACTIVE=prod \
+                         ${DOCKER_REGISTRY}/petclinic:${env.BUILD_NUMBER}'
+                """
+            }
+        }
+
+        stage('Smoke Test') {
+            steps {
+                sh 'curl -f http://${DEPLOY_HOST}:8080/actuator/health || exit 1'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline succeeded'
+        }
+        failure {
+            echo 'Pipeline failed — notify ops'
+        }
+        always {
+            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+        }
+    }
+}

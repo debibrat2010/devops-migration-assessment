@@ -1,0 +1,5 @@
+project_key,total_attachments,total_size_gb,largest_attachment_mb
+PET,4500,12.5,85
+DEVOPS,2100,4.2,40
+REL,800,1.1,15
+INFRA,200,0.3,5

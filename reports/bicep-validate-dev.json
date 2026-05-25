@@ -1,0 +1,360 @@
+{
+  "error": null,
+  "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Resources/deployments/main",
+  "name": "main",
+  "properties": {
+    "correlationId": "f6130001-63f0-40aa-aa04-59307b8820bf",
+    "debugSetting": null,
+    "dependencies": [
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.OperationalInsights/workspaces/mig-dev-327dctvjubsvg-law",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "mig-dev-327dctvjubsvg-law",
+            "resourceType": "Microsoft.OperationalInsights/workspaces"
+          }
+        ],
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Insights/components/mig-dev-327dctvjubsvg-appi",
+        "resourceGroup": "rg-migration-assessement",
+        "resourceName": "mig-dev-327dctvjubsvg-appi",
+        "resourceType": "Microsoft.Insights/components"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Insights/components/mig-dev-327dctvjubsvg-appi",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "mig-dev-327dctvjubsvg-appi",
+            "resourceType": "Microsoft.Insights/components"
+          },
+          {
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Web/serverfarms/mig-dev-327dctvjubsvg-asp",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "mig-dev-327dctvjubsvg-asp",
+            "resourceType": "Microsoft.Web/serverfarms"
+          },
+          {
+            "apiVersion": "2020-02-02",
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Insights/components/mig-dev-327dctvjubsvg-appi",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "mig-dev-327dctvjubsvg-appi",
+            "resourceType": "Microsoft.Insights/components"
+          }
+        ],
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Web/sites/mig-dev-327dctvjubsvg-petclinic",
+        "resourceGroup": "rg-migration-assessement",
+        "resourceName": "mig-dev-327dctvjubsvg-petclinic",
+        "resourceType": "Microsoft.Web/sites"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.ContainerRegistry/registries/acrmigdev327dctvjubsvg",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "acrmigdev327dctvjubsvg",
+            "resourceType": "Microsoft.ContainerRegistry/registries"
+          },
+          {
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Web/sites/mig-dev-327dctvjubsvg-petclinic",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "mig-dev-327dctvjubsvg-petclinic",
+            "resourceType": "Microsoft.Web/sites"
+          },
+          {
+            "apiVersion": "2023-01-01",
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Web/sites/mig-dev-327dctvjubsvg-petclinic",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "mig-dev-327dctvjubsvg-petclinic",
+            "resourceType": "Microsoft.Web/sites"
+          }
+        ],
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.ContainerRegistry/registries/acrmigdev327dctvjubsvg/providers/Microsoft.Authorization/roleAssignments/dde0abb1-59bb-5d9b-bc61-3bcb315430f9",
+        "resourceGroup": "rg-migration-assessement",
+        "resourceName": "dde0abb1-59bb-5d9b-bc61-3bcb315430f9",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      },
+      {
+        "dependsOn": [
+          {
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Web/sites/mig-dev-327dctvjubsvg-petclinic",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "mig-dev-327dctvjubsvg-petclinic",
+            "resourceType": "Microsoft.Web/sites"
+          },
+          {
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.KeyVault/vaults/kvmigdev327dctvjubsvg",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "kvmigdev327dctvjubsvg",
+            "resourceType": "Microsoft.KeyVault/vaults"
+          },
+          {
+            "apiVersion": "2023-01-01",
+            "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Web/sites/mig-dev-327dctvjubsvg-petclinic",
+            "resourceGroup": "rg-migration-assessement",
+            "resourceName": "mig-dev-327dctvjubsvg-petclinic",
+            "resourceType": "Microsoft.Web/sites"
+          }
+        ],
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.KeyVault/vaults/kvmigdev327dctvjubsvg/providers/Microsoft.Authorization/roleAssignments/9af36b5a-3abd-5d2f-827b-738008ae8dd3",
+        "resourceGroup": "rg-migration-assessement",
+        "resourceName": "9af36b5a-3abd-5d2f-827b-738008ae8dd3",
+        "resourceType": "Microsoft.Authorization/roleAssignments"
+      }
+    ],
+    "diagnostics": null,
+    "duration": "PT0S",
+    "error": null,
+    "extensions": [],
+    "mode": "Incremental",
+    "onErrorDeployment": null,
+    "outputResources": null,
+    "outputs": null,
+    "parameters": {
+      "containerImage": {
+        "type": "String",
+        "value": "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+      },
+      "environment": {
+        "type": "String",
+        "value": "dev"
+      },
+      "location": {
+        "type": "String",
+        "value": "southeastasia"
+      },
+      "nameSuffix": {
+        "type": "String",
+        "value": "327dctvjubsvg"
+      }
+    },
+    "parametersLink": null,
+    "providers": [
+      {
+        "id": null,
+        "namespace": "Microsoft.OperationalInsights",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "southeastasia"
+            ],
+            "properties": null,
+            "resourceType": "workspaces",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.Insights",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "southeastasia"
+            ],
+            "properties": null,
+            "resourceType": "components",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.KeyVault",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "southeastasia"
+            ],
+            "properties": null,
+            "resourceType": "vaults",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.ContainerRegistry",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "southeastasia"
+            ],
+            "properties": null,
+            "resourceType": "registries",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.Web",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "southeastasia"
+            ],
+            "properties": null,
+            "resourceType": "serverfarms",
+            "zoneMappings": null
+          },
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              "southeastasia"
+            ],
+            "properties": null,
+            "resourceType": "sites",
+            "zoneMappings": null
+          }
+        ]
+      },
+      {
+        "id": null,
+        "namespace": "Microsoft.Authorization",
+        "providerAuthorizationConsentState": null,
+        "registrationPolicy": null,
+        "registrationState": null,
+        "resourceTypes": [
+          {
+            "aliases": null,
+            "apiProfiles": null,
+            "apiVersions": null,
+            "capabilities": null,
+            "defaultApiVersion": null,
+            "locationMappings": null,
+            "locations": [
+              null
+            ],
+            "properties": null,
+            "resourceType": "roleAssignments",
+            "zoneMappings": null
+          }
+        ]
+      }
+    ],
+    "provisioningState": "Succeeded",
+    "templateHash": "4623115653270214727",
+    "templateLink": null,
+    "timestamp": "2026-05-25T18:12:02.330190+00:00",
+    "validatedResources": [
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.ContainerRegistry/registries/acrmigdev327dctvjubsvg",
+        "identifiers": null,
+        "resourceGroup": "rg-migration-assessement",
+        "resourceType": null
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.ContainerRegistry/registries/acrmigdev327dctvjubsvg/providers/Microsoft.Authorization/roleAssignments/dde0abb1-59bb-5d9b-bc61-3bcb315430f9",
+        "identifiers": null,
+        "resourceGroup": "rg-migration-assessement",
+        "resourceType": null
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Insights/components/mig-dev-327dctvjubsvg-appi",
+        "identifiers": null,
+        "resourceGroup": "rg-migration-assessement",
+        "resourceType": null
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.KeyVault/vaults/kvmigdev327dctvjubsvg",
+        "identifiers": null,
+        "resourceGroup": "rg-migration-assessement",
+        "resourceType": null
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.KeyVault/vaults/kvmigdev327dctvjubsvg/providers/Microsoft.Authorization/roleAssignments/9af36b5a-3abd-5d2f-827b-738008ae8dd3",
+        "identifiers": null,
+        "resourceGroup": "rg-migration-assessement",
+        "resourceType": null
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.OperationalInsights/workspaces/mig-dev-327dctvjubsvg-law",
+        "identifiers": null,
+        "resourceGroup": "rg-migration-assessement",
+        "resourceType": null
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Web/serverfarms/mig-dev-327dctvjubsvg-asp",
+        "identifiers": null,
+        "resourceGroup": "rg-migration-assessement",
+        "resourceType": null
+      },
+      {
+        "apiVersion": null,
+        "extension": null,
+        "id": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement/providers/Microsoft.Web/sites/mig-dev-327dctvjubsvg-petclinic",
+        "identifiers": null,
+        "resourceGroup": "rg-migration-assessement",
+        "resourceType": null
+      }
+    ],
+    "validationLevel": null
+  },
+  "resourceGroup": "rg-migration-assessement",
+  "type": "Microsoft.Resources/deployments"
+}

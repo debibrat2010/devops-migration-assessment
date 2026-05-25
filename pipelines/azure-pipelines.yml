@@ -1,0 +1,109 @@
+# Module G & H — Azure DevOps YAML migration (PetClinic)
+# Prerequisites: variable group linked to Key Vault, service connection azure-migration-sc
+# Self-hosted pool for build/push: ado-selfhosted-linux
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+
+variables:
+  - group: petclinic-kv-secrets   # Link to Key Vault in ADO Library
+  - name: acrLoginServer
+    value: '$(ACR_LOGIN_SERVER)'   # Set in variable group
+  - name: imageRepository
+    value: 'petclinic'
+  - name: resourceGroupName
+    value: 'rg-migration-assessement'
+  - name: appServiceDev
+    value: '$(APP_SERVICE_DEV_NAME)'
+
+stages:
+  - stage: Build
+    displayName: 'Build and test'
+    jobs:
+      - job: BuildContainer
+        pool:
+          name: ado-selfhosted-linux
+        steps:
+          - template: templates/build-container.yml
+            parameters:
+              tag: '$(Build.BuildId)'
+
+  - stage: Scan
+    displayName: 'Security scan'
+    dependsOn: Build
+    jobs:
+      - job: TrivyScan
+        pool:
+          name: ado-selfhosted-linux
+        steps:
+          - template: templates/security-scan.yml
+            parameters:
+              imageRef: '$(acrLoginServer)/$(imageRepository):$(Build.BuildId)'
+
+  - stage: DeployDev
+    displayName: 'Deploy to dev'
+    dependsOn: Scan
+    jobs:
+      - deployment: DeployDevApp
+        environment: dev
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/deploy-appservice-container.yml
+                  parameters:
+                    appName: '$(appServiceDev)'
+                    resourceGroup: '$(resourceGroupName)'
+                    imageName: '$(acrLoginServer)/$(imageRepository):$(Build.BuildId)'
+                - template: templates/smoke-test.yml
+                  parameters:
+                    healthUrl: 'https://$(appServiceDev).azurewebsites.net/actuator/health'
+
+  - stage: DeployProd
+    displayName: 'Deploy to production'
+    dependsOn: DeployDev
+    jobs:
+      - deployment: DeployProdApp
+        environment: prod   # Configure approval checks in ADO
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: templates/deploy-appservice-container.yml
+                  parameters:
+                    appName: '$(APP_SERVICE_PROD_NAME)'
+                    resourceGroup: '$(resourceGroupName)'
+                    imageName: '$(acrLoginServer)/$(imageRepository):$(Build.BuildId)'
+                - template: templates/smoke-test.yml
+
+  - stage: Rollback
+    displayName: 'Rollback (manual)'
+    dependsOn: DeployProd
+    condition: failed()
+    jobs:
+      - job: RollbackPreviousTag
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              echo "Redeploy previous immutable tag from release record"
+              echo "##vso[task.logissue type=warning]Rollback: set image to last known good tag in App Service"
+            displayName: 'Rollback instructions'
+
+  - stage: PostDeployValidation
+    displayName: 'Post-deployment validation'
+    dependsOn: DeployProd
+    condition: succeeded()
+    jobs:
+      - job: Validate
+        steps:
+          - template: templates/smoke-test.yml
+          - script: echo "Link deployment to work item AB#$(System.PullRequest.PullRequestId)"
+            displayName: 'Work item traceability'

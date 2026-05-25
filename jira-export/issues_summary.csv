@@ -1,0 +1,9 @@
+project_key,issue_type,status,count,avg_age_days
+PET,Story,Done,450,120
+PET,Bug,Open,85,14
+PET,Task,In Progress,120,7
+DEVOPS,Story,Done,300,90
+DEVOPS,Bug,Open,45,21
+REL,Change Request,Approved,80,5
+REL,Change Request,In Review,40,3
+INFRA,Incident,Resolved,150,2

@@ -1,0 +1,6 @@
+app_key,app_name,cloud_compatible,notes
+script-runner,ScriptRunner,false,Requires cloud alternative or retirement
+insight,Insight Assets,partial,Plan Assets cloud migration
+xray,Xray Test Management,true,Cloud version available
+automation,Automation for Jira,true,Native in Jira Cloud
+custom-field-suite,Custom Field Suite,false,Rebuild fields in cloud

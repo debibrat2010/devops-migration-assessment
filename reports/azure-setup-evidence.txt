@@ -1,0 +1,22 @@
+# Azure setup evidence — Phase 0 / IaC
+
+Subscription name: Azure subscription 1
+Subscription ID: c09dd6ef-0111-4bf0-a0d4-3600979a0c7d
+Resource group (all assessment resources): rg-migration-assessement
+Region: southeastasia
+
+Azure DevOps org URL:
+Project name:
+Service connection name: azure-migration-sc
+Service connection scope: subscription or rg-migration-assessement
+Verify status:
+
+Agent pool name: ado-selfhosted-linux
+
+# Populated after iac/terraform apply (reports/terraform-outputs.json)
+ACR login server: acrmigdevaa87c040.azurecr.io
+ACR name: acrmigdevaa87c040
+Key Vault name: kvmigdevaa87c040
+App Service name (dev): mig-dev-aa87c040-petclinic
+App Service URL: https://mig-dev-aa87c040-petclinic.azurewebsites.net
+App Service name (prod): (optional second terraform apply with environment=prod)

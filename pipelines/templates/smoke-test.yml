@@ -1,0 +1,17 @@
+parameters:
+  - name: healthUrl
+    type: string
+    default: 'https://$(appServiceHostName)/actuator/health'
+
+steps:
+  - script: |
+      url="${{ parameters.healthUrl }}"
+      echo "Smoke test: $url"
+      for i in 1 2 3 4 5; do
+        code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
+        echo "Attempt $i HTTP $code"
+        if [ "$code" = "200" ]; then exit 0; fi
+        sleep 15
+      done
+      exit 1
+    displayName: 'HTTP health smoke test'

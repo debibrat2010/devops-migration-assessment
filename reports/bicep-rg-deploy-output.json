@@ -1,0 +1,14 @@
+{
+  "location": {
+    "type": "String",
+    "value": "southeastasia"
+  },
+  "resourceGroupId": {
+    "type": "String",
+    "value": "/subscriptions/c09dd6ef-0111-4bf0-a0d4-3600979a0c7d/resourceGroups/rg-migration-assessement"
+  },
+  "resourceGroupName": {
+    "type": "String",
+    "value": "rg-migration-assessement"
+  }
+}

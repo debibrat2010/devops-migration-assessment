@@ -1,0 +1,42 @@
+# Module K — Bamboo YAML Specs converted to Azure DevOps (excerpt)
+# Source: legacy-ci/bamboo/bamboo-specs.yaml
+
+trigger: none
+
+stages:
+  - stage: Build_and_Test
+    jobs:
+      - job: Maven_Build
+        pool:
+          name: ado-selfhosted-linux
+        steps:
+          - checkout: self
+          - script: ./mvnw -B clean verify
+            workingDirectory: apps/spring-petclinic
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: '**/TEST-*.xml'
+
+  - stage: Package_and_Publish
+    dependsOn: Build_and_Test
+    jobs:
+      - job: Docker_Publish
+        steps:
+          - template: ../templates/build-container.yml
+
+  - stage: Deploy
+    dependsOn: Package_and_Publish
+    jobs:
+      - deployment: SSH_Deploy_Prod
+        environment: production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Replaced Bamboo SSH deploy with App Service deploy
+                - template: ../templates/deploy-appservice-container.yml
+                  parameters:
+                    appName: '$(APP_SERVICE_PROD_NAME)'
+                    resourceGroup: 'rg-migration-assessement'
+                    imageName: '$(acrLoginServer)/petclinic:$(Build.BuildId)'

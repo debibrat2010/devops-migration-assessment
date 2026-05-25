@@ -1,0 +1,32 @@
+trigger:
+  branches:
+    include: [main]
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: petclinic-kv-secrets
+
+stages:
+  - stage: BuildPython
+    jobs:
+      - job: Build
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.11'
+          - script: |
+              cd apps/python-flask
+              pip install -r requirements.txt
+              python -m compileall .
+            displayName: 'Validate Python app'
+          - task: Docker@2
+            inputs:
+              command: buildAndPush
+              containerRegistry: '$(acrServiceConnection)'
+              repository: 'python-flask'
+              Dockerfile: 'apps/python-flask/Dockerfile'
+              tags: |
+                $(Build.BuildId)
+                $(Build.SourceVersion)
