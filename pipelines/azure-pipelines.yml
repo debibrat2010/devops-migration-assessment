@@ -106,5 +106,7 @@ stages:
       - job: Validate
         steps:
           - template: templates/smoke-test.yml
+            parameters:
+              healthUrl: 'https://$(appServiceProd).azurewebsites.net/actuator/health'
           - script: echo "Link deployment to work item AB#$(System.PullRequest.PullRequestId)"
             displayName: 'Work item traceability'
