@@ -76,13 +76,16 @@ steps:
       SOURCE_VERSION: $(Build.SourceVersion)
       DOCKERFILE_REL: ${{ parameters.dockerfilePath }}
 
+  # OCI index includes attestation manifests — check for linux/amd64, not a single .Architecture field
   - script: |
       set -euo pipefail
       IMAGE="${ACR_LOGIN_SERVER}/${IMAGE_REPO}:${BUILD_TAG}"
-      arch=$(docker buildx imagetools inspect "$IMAGE" --format '{{.Manifest.Platform.Architecture}}' 2>/dev/null || true)
-      echo "Image $IMAGE architecture: ${arch:-unknown}"
-      if [ "$arch" != "amd64" ]; then
-        echo "##vso[task.logissue type=error]Expected amd64 in registry; got '${arch:-missing}'. Rebuild self-hosted agent image (buildx plugin) and re-run."
+      inspect=$(docker buildx imagetools inspect "$IMAGE")
+      echo "$inspect"
+      if echo "$inspect" | grep -qE 'Platform:[[:space:]]+linux/amd64'; then
+        echo "Verified: $IMAGE includes linux/amd64"
+      else
+        echo "##vso[task.logissue type=error]No linux/amd64 platform found for $IMAGE"
         exit 1
       fi
     displayName: 'Verify ACR image is amd64'
