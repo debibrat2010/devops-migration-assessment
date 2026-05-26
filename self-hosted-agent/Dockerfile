@@ -13,6 +13,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-17-jdk maven docker.io \
     && rm -rf /var/lib/apt/lists/*
 
+# docker.io uses the legacy builder; buildx is required for linux/amd64 images on arm64 agents
+ARG BUILDX_VERSION=0.19.3
+RUN ARCH="$(dpkg --print-architecture)" \
+    && mkdir -p /usr/local/lib/docker/cli-plugins \
+    && curl -fsSL "https://github.com/docker/buildx/releases/download/v${BUILDX_VERSION}/buildx-v${BUILDX_VERSION}.linux-${ARCH}" \
+      -o /usr/local/lib/docker/cli-plugins/docker-buildx \
+    && chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx \
+    && docker buildx version
+
 # Azure CLI via Microsoft apt repo (works on arm64 and amd64)
 RUN curl -sLS https://packages.microsoft.com/keys/microsoft.asc \
     | gpg --dearmor -o /usr/share/keyrings/microsoft-archive-keyring.gpg \

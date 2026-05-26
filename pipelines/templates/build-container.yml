@@ -21,53 +21,72 @@ steps:
       jdkVersionOption: '1.17'
     condition: eq(variables['Agent.OS'], 'Linux_NT')
 
-  # App Service Linux hosts are amd64 — self-hosted agent on Apple Silicon builds arm64 by default
   - task: Docker@2
-    displayName: 'Build container image (linux/amd64)'
+    displayName: 'Login to ACR'
     inputs:
-      command: build
-      dockerfile: '${{ parameters.dockerfilePath }}'
-      buildContext: '$(Build.SourcesDirectory)'
-      repository: '${{ parameters.imageRepository }}'
-      arguments: '--platform linux/amd64'
-      tags: |
-        ${{ parameters.tag }}
-        $(Build.SourceVersion)
+      command: login
+      containerRegistry: '$(acrServiceConnection)'
 
-  - script: |
-      echo "Image architecture (must be amd64 for Azure App Service):"
-      docker image inspect "${IMAGE_REPO}:${BUILD_TAG}" --format 'arch={{.Architecture}} os={{.Os}}'
-      arch=$(docker image inspect "${IMAGE_REPO}:${BUILD_TAG}" --format '{{.Architecture}}')
-      if [ "$arch" != "amd64" ]; then
-        echo "##vso[task.logissue type=error]Expected amd64 image; got $arch. App Service will show Application Error."
-        exit 1
-      fi
-    displayName: 'Verify image architecture'
-    env:
-      IMAGE_REPO: ${{ parameters.imageRepository }}
-      BUILD_TAG: ${{ parameters.tag }}
-
-  # Build tags locally as petclinic:3 — ACR push needs registry/login-server/repo:tag
-  # Use env: — bash $(VAR) is command substitution; ADO macros belong in env block
+  # Docker@2 + --platform fails on legacy builder (ubuntu docker.io). Use buildx + --push.
   - script: |
       set -euo pipefail
-      docker tag "${IMAGE_REPO}:${BUILD_TAG}" "${ACR_LOGIN_SERVER}/${IMAGE_REPO}:${BUILD_TAG}"
-      docker tag "${IMAGE_REPO}:${SOURCE_VERSION}" "${ACR_LOGIN_SERVER}/${IMAGE_REPO}:${SOURCE_VERSION}"
-      echo "Tagged for push:"
-      docker images "${ACR_LOGIN_SERVER}/${IMAGE_REPO}" --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}"
-    displayName: 'Tag image for ACR'
+      export DOCKER_BUILDKIT=1
+
+      if ! docker buildx version >/dev/null 2>&1; then
+        echo "Installing docker buildx (rebuild ado-selfhosted-agent image to bake this in)"
+        BUILDX_VERSION=0.19.3
+        case "$(uname -m)" in aarch64|arm64) BX_ARCH=arm64 ;; *) BX_ARCH=amd64 ;; esac
+        mkdir -p /usr/local/lib/docker/cli-plugins
+        curl -fsSL "https://github.com/docker/buildx/releases/download/v${BUILDX_VERSION}/buildx-v${BUILDX_VERSION}.linux-${BX_ARCH}" \
+          -o /usr/local/lib/docker/cli-plugins/docker-buildx
+        chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
+      fi
+      docker buildx version
+
+      BUILDER=ado-amd64-builder
+      if ! docker buildx inspect "$BUILDER" >/dev/null 2>&1; then
+        docker buildx create --name "$BUILDER" --driver docker-container --bootstrap
+      fi
+      docker buildx use "$BUILDER"
+
+      IMAGE_BASE="${ACR_LOGIN_SERVER}/${IMAGE_REPO}"
+      CONTEXT="$(Build.SourcesDirectory)"
+      DOCKERFILE_PATH="${CONTEXT}/${DOCKERFILE_REL}"
+
+      echo "Building linux/amd64 and pushing:"
+      echo "  ${IMAGE_BASE}:${BUILD_TAG}"
+      echo "  ${IMAGE_BASE}:${SOURCE_VERSION}"
+
+      docker buildx build \
+        --platform linux/amd64 \
+        -f "$DOCKERFILE_PATH" \
+        -t "${IMAGE_BASE}:${BUILD_TAG}" \
+        -t "${IMAGE_BASE}:${SOURCE_VERSION}" \
+        --push \
+        "$CONTEXT"
+
+      echo "Published platform:"
+      docker buildx imagetools inspect "${IMAGE_BASE}:${BUILD_TAG}" --format '{{json .Manifest}}' | head -c 500
+      echo ""
+    displayName: 'Build and push container (linux/amd64 via buildx)'
     env:
       ACR_LOGIN_SERVER: $(acrLoginServer)
       IMAGE_REPO: ${{ parameters.imageRepository }}
       BUILD_TAG: ${{ parameters.tag }}
       SOURCE_VERSION: $(Build.SourceVersion)
+      DOCKERFILE_REL: ${{ parameters.dockerfilePath }}
 
-  - task: Docker@2
-    displayName: 'Push to ACR'
-    inputs:
-      command: push
-      containerRegistry: '$(acrServiceConnection)'
-      repository: '${{ parameters.imageRepository }}'
-      tags: |
-        ${{ parameters.tag }}
-        $(Build.SourceVersion)
+  - script: |
+      set -euo pipefail
+      IMAGE="${ACR_LOGIN_SERVER}/${IMAGE_REPO}:${BUILD_TAG}"
+      arch=$(docker buildx imagetools inspect "$IMAGE" --format '{{.Manifest.Platform.Architecture}}' 2>/dev/null || true)
+      echo "Image $IMAGE architecture: ${arch:-unknown}"
+      if [ "$arch" != "amd64" ]; then
+        echo "##vso[task.logissue type=error]Expected amd64 in registry; got '${arch:-missing}'. Rebuild self-hosted agent image (buildx plugin) and re-run."
+        exit 1
+      fi
+    displayName: 'Verify ACR image is amd64'
+    env:
+      ACR_LOGIN_SERVER: $(acrLoginServer)
+      IMAGE_REPO: ${{ parameters.imageRepository }}
+      BUILD_TAG: ${{ parameters.tag }}

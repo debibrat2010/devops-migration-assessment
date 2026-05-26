@@ -20,10 +20,25 @@ docker run -d --name ado-agent \
   ado-selfhosted-agent
 ```
 
+## Rebuild after Dockerfile changes (buildx for amd64 → ACR)
+
+Pipeline builds **linux/amd64** images with `docker buildx`. Rebuild the agent when `Dockerfile` changes:
+
+```bash
+cd self-hosted-agent
+docker build -t ado-selfhosted-agent .
+docker rm -f ado-agent 2>/dev/null || true
+docker run -d --name ado-agent \
+  -e AZP_URL -e AZP_TOKEN -e AZP_POOL \
+  -e AGENT_ALLOW_RUNASROOT=true \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  ado-selfhosted-agent
+```
+
 ## Capabilities required
 
 - Java 17, Maven
-- Docker (build/push images)
+- Docker + **buildx** (cross-platform amd64 builds on Apple Silicon)
 - Azure CLI, kubectl, Helm, Trivy
 
 ## Network placement
