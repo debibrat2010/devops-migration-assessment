@@ -250,13 +250,16 @@ After `iac/terraform/deploy.sh` creates Key Vault:
 1. ADO → **Pipelines → Library → + Variable group**
 2. Name: `petclinic-kv-secrets` (must match `pipelines/azure-pipelines.yml`)
 3. Link to Key Vault from Terraform output, e.g. `kvmigdevaa87c040`
-4. Add variables (plain or KV-linked):
+4. Link KV secrets — **ADO variable names match the secret names in Key Vault** (hyphens, not underscores):
 
-| Variable | Example value |
-|----------|----------------|
-| `ACR_LOGIN_SERVER` | `acrmigdevaa87c040.azurecr.io` |
-| `APP_SERVICE_DEV_NAME` | `mig-dev-aa87c040-petclinic` |
-| `acrServiceConnection` | Plain variable: `acr-migration-sc` (Docker Registry SC name — not a KV secret) |
+| Key Vault secret (ADO variable name) | Example value |
+|--------------------------------------|-----------------|
+| `acr-login-server` | `acrmigdevaa87c040.azurecr.io` |
+| `app-service-dev-name` | `mig-dev-aa87c040-petclinic` |
+
+Pipeline YAML aliases these as `acrLoginServer` and `appServiceDev` via `$(acr-login-server)` and `$(app-service-dev-name)`. Do **not** use `ACR_LOGIN_SERVER` unless you add a separate plain variable with that exact name.
+
+`acrServiceConnection` is set in `azure-pipelines.yml` as `acr-migration-sc` (Docker Registry SC — not a KV secret).
 
 Also create **Docker Registry** service connection `acr-migration-sc` → ACR `acrmigdevaa87c040` (see ACR connection below).
 

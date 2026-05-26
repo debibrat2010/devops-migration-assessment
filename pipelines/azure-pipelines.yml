@@ -13,14 +13,15 @@ pool:
 
 variables:
   - group: petclinic-kv-secrets   # Link to Key Vault in ADO Library
+  # KV-linked names in petclinic-kv-secrets (see Library screenshot): acr-login-server, app-service-dev-name
   - name: acrLoginServer
-    value: '$(ACR_LOGIN_SERVER)'   # Set in variable group
+    value: '$(acr-login-server)'
   - name: imageRepository
     value: 'petclinic'
   - name: resourceGroupName
     value: 'rg-migration-assessement'
   - name: appServiceDev
-    value: '$(APP_SERVICE_DEV_NAME)'
+    value: '$(app-service-dev-name)'
   # Docker Registry service connection name (Project Settings → Service connections)
   - name: acrServiceConnection
     value: 'acr-migration-sc'
