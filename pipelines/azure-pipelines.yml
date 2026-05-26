@@ -1,12 +1,15 @@
 # Module G & H — Azure DevOps YAML migration (PetClinic)
 # Prerequisites: variable group linked to Key Vault, service connection azure-migration-sc
-# Self-hosted pool for build/push: ado-selfhosted-linux
+# All stages use self-hosted pool ado-selfhosted-linux (Docker, Trivy, Azure deploy tasks)
 
 trigger:
   branches:
     include:
       - main
       - develop
+
+pool:
+  name: ado-selfhosted-linux
 
 variables:
   - group: petclinic-kv-secrets   # Link to Key Vault in ADO Library
@@ -27,8 +30,6 @@ stages:
     displayName: 'Build and test'
     jobs:
       - job: BuildContainer
-        pool:
-          name: ado-selfhosted-linux
         steps:
           - template: templates/build-container.yml
             parameters:
@@ -39,8 +40,6 @@ stages:
     dependsOn: Build
     jobs:
       - job: TrivyScan
-        pool:
-          name: ado-selfhosted-linux
         steps:
           - template: templates/security-scan.yml
             parameters:
@@ -52,8 +51,6 @@ stages:
     jobs:
       - deployment: DeployDevApp
         environment: dev
-        pool:
-          vmImage: 'ubuntu-latest'
         strategy:
           runOnce:
             deploy:
@@ -73,8 +70,6 @@ stages:
     jobs:
       - deployment: DeployProdApp
         environment: prod   # Configure approval checks in ADO
-        pool:
-          vmImage: 'ubuntu-latest'
         strategy:
           runOnce:
             deploy:
@@ -92,8 +87,6 @@ stages:
     condition: failed()
     jobs:
       - job: RollbackPreviousTag
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
           - script: |
               echo "Redeploy previous immutable tag from release record"

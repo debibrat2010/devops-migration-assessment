@@ -4,6 +4,12 @@ parameters:
     default: '$(acrLoginServer)/petclinic:$(Build.BuildId)'
 
 steps:
+  - task: Docker@2
+    displayName: 'Login to ACR (private registry scan)'
+    inputs:
+      command: login
+      containerRegistry: '$(acrServiceConnection)'
+
   - script: |
       trivy image --severity CRITICAL,HIGH --exit-code 0 \
         --format table -o $(Build.ArtifactStagingDirectory)/trivy-report.txt \
