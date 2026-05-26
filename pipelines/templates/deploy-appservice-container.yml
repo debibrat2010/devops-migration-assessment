@@ -17,3 +17,34 @@ steps:
       appName: '${{ parameters.appName }}'
       resourceGroupName: '${{ parameters.resourceGroup }}'
       containers: '${{ parameters.imageName }}'
+
+  # 503 smoke failures are often: app stopped (cost saving), missing WEBSITES_PORT, or slow JVM start
+  - task: AzureCLI@2
+    displayName: 'Set container port and start App Service'
+    inputs:
+      azureSubscription: '${{ parameters.azureSubscription }}'
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -euo pipefail
+        APP='${{ parameters.appName }}'
+        RG='${{ parameters.resourceGroup }}'
+        IMAGE='${{ parameters.imageName }}'
+        REGISTRY="${IMAGE%%/*}"
+
+        az webapp config appsettings set -g "$RG" -n "$APP" \
+          --settings \
+            WEBSITES_PORT=8080 \
+            DOCKER_REGISTRY_SERVER_URL="https://${REGISTRY}"
+
+        az resource update -g "$RG" \
+          --name "$APP" \
+          --resource-type Microsoft.Web/sites \
+          --set properties.siteConfig.acrUseManagedIdentityCreds=true
+
+        az webapp config container set -g "$RG" -n "$APP" \
+          --docker-custom-image-name "$IMAGE" \
+          --docker-registry-server-url "https://${REGISTRY}"
+
+        az webapp restart -g "$RG" -n "$APP"
+        echo "Restarted $APP with $IMAGE (ACR managed identity + WEBSITES_PORT=8080)"

@@ -80,20 +80,23 @@ resource "azurerm_linux_web_app" "petclinic" {
   tags                = var.tags
 
   site_config {
-    always_on         = true
-    health_check_path = "/actuator/health"
+    always_on                               = true
+    health_check_path                       = "/actuator/health"
+    container_registry_use_managed_identity = true
 
-    # Placeholder image until pipeline pushes PetClinic to ACR
+    # Placeholder until pipeline deploys PetClinic from ACR
     application_stack {
-      docker_image_name   = "azuredocs/containerapps-helloworld:latest"
-      docker_registry_url = "https://mcr.microsoft.com"
+      docker_image_name   = "${azurerm_container_registry.acr.login_server}/petclinic:latest"
+      docker_registry_url = "https://${azurerm_container_registry.acr.login_server}"
     }
   }
 
   app_settings = {
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE   = "false"
-    APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.appi.connection_string
-    SPRING_PROFILES_ACTIVE                = "default"
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE     = "false"
+    WEBSITES_PORT                           = "8080"
+    DOCKER_REGISTRY_SERVER_URL              = "https://${azurerm_container_registry.acr.login_server}"
+    APPLICATIONINSIGHTS_CONNECTION_STRING   = azurerm_application_insights.appi.connection_string
+    SPRING_PROFILES_ACTIVE                  = "default"
   }
 
   identity {

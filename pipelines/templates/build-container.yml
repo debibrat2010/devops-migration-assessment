@@ -21,16 +21,31 @@ steps:
       jdkVersionOption: '1.17'
     condition: eq(variables['Agent.OS'], 'Linux_NT')
 
+  # App Service Linux hosts are amd64 — self-hosted agent on Apple Silicon builds arm64 by default
   - task: Docker@2
-    displayName: 'Build container image'
+    displayName: 'Build container image (linux/amd64)'
     inputs:
       command: build
       dockerfile: '${{ parameters.dockerfilePath }}'
       buildContext: '$(Build.SourcesDirectory)'
       repository: '${{ parameters.imageRepository }}'
+      arguments: '--platform linux/amd64'
       tags: |
         ${{ parameters.tag }}
         $(Build.SourceVersion)
+
+  - script: |
+      echo "Image architecture (must be amd64 for Azure App Service):"
+      docker image inspect "${IMAGE_REPO}:${BUILD_TAG}" --format 'arch={{.Architecture}} os={{.Os}}'
+      arch=$(docker image inspect "${IMAGE_REPO}:${BUILD_TAG}" --format '{{.Architecture}}')
+      if [ "$arch" != "amd64" ]; then
+        echo "##vso[task.logissue type=error]Expected amd64 image; got $arch. App Service will show Application Error."
+        exit 1
+      fi
+    displayName: 'Verify image architecture'
+    env:
+      IMAGE_REPO: ${{ parameters.imageRepository }}
+      BUILD_TAG: ${{ parameters.tag }}
 
   # Build tags locally as petclinic:3 — ACR push needs registry/login-server/repo:tag
   # Use env: — bash $(VAR) is command substitution; ADO macros belong in env block

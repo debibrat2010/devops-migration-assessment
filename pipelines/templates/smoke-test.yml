@@ -2,16 +2,35 @@ parameters:
   - name: healthUrl
     type: string
     default: 'https://$(appServiceHostName)/actuator/health'
+  - name: maxAttempts
+    type: number
+    default: 12
+  - name: sleepSeconds
+    type: number
+    default: 20
 
 steps:
   - script: |
+      set -euo pipefail
       url="${{ parameters.healthUrl }}"
-      echo "Smoke test: $url"
-      for i in 1 2 3 4 5; do
-        code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000")
+      max=${{ parameters.maxAttempts }}
+      sleep_sec=${{ parameters.sleepSeconds }}
+      echo "Smoke test: $url (up to $max attempts, ${sleep_sec}s apart)"
+      last_body=""
+      for i in $(seq 1 "$max"); do
+        code=$(curl -sS -o /tmp/smoke-body.txt -w "%{http_code}" "$url" || echo "000")
+        last_body=$(head -c 500 /tmp/smoke-body.txt 2>/dev/null || true)
         echo "Attempt $i HTTP $code"
-        if [ "$code" = "200" ]; then exit 0; fi
-        sleep 15
+        if [ "$code" = "200" ]; then
+          echo "Health response: $last_body"
+          exit 0
+        fi
+        if [ "$i" -lt "$max" ]; then
+          sleep "$sleep_sec"
+        fi
       done
+      echo "##vso[task.logissue type=error]Health check did not return 200 after $max attempts"
+      echo "Last response body (truncated): $last_body"
+      echo "If HTTP 503 persists: az webapp log tail -g <rg> -n <app>; confirm WEBSITES_PORT=8080 and app is Running"
       exit 1
     displayName: 'HTTP health smoke test'
