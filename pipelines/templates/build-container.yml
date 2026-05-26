@@ -33,15 +33,19 @@ steps:
         $(Build.SourceVersion)
 
   # Build tags locally as petclinic:3 — ACR push needs registry/login-server/repo:tag
+  # Use env: — bash $(VAR) is command substitution; ADO macros belong in env block
   - script: |
       set -euo pipefail
-      ACR="$(acrLoginServer)"
-      REPO="${{ parameters.imageRepository }}"
-      docker tag "${REPO}:${{ parameters.tag }}" "${ACR}/${REPO}:${{ parameters.tag }}"
-      docker tag "${REPO}:$(Build.SourceVersion)" "${ACR}/${REPO}:$(Build.SourceVersion)"
+      docker tag "${IMAGE_REPO}:${BUILD_TAG}" "${ACR_LOGIN_SERVER}/${IMAGE_REPO}:${BUILD_TAG}"
+      docker tag "${IMAGE_REPO}:${SOURCE_VERSION}" "${ACR_LOGIN_SERVER}/${IMAGE_REPO}:${SOURCE_VERSION}"
       echo "Tagged for push:"
-      docker images "${ACR}/${REPO}" --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}"
+      docker images "${ACR_LOGIN_SERVER}/${IMAGE_REPO}" --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}"
     displayName: 'Tag image for ACR'
+    env:
+      ACR_LOGIN_SERVER: $(ACR_LOGIN_SERVER)
+      IMAGE_REPO: ${{ parameters.imageRepository }}
+      BUILD_TAG: ${{ parameters.tag }}
+      SOURCE_VERSION: $(Build.SourceVersion)
 
   - task: Docker@2
     displayName: 'Push to ACR'
