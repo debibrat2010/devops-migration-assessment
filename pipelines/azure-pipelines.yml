@@ -18,6 +18,9 @@ variables:
     value: 'rg-migration-assessement'
   - name: appServiceDev
     value: '$(APP_SERVICE_DEV_NAME)'
+  # Docker Registry service connection name (Project Settings → Service connections)
+  - name: acrServiceConnection
+    value: 'acr-migration-sc'
 
 stages:
   - stage: Build

@@ -3,9 +3,9 @@
     "total_pipelines": 3,
     "high_risk_count": 3,
     "tools": [
-      "Bamboo",
       "GitLab",
-      "Jenkins"
+      "Jenkins",
+      "Bamboo"
     ]
   },
   "pipelines": [
@@ -26,9 +26,9 @@
         "slack-webhook-token"
       ],
       "target_environments": [
-        "dev",
+        "staging",
         "prod",
-        "staging"
+        "dev"
       ],
       "risk_notes": [
         "SSH deploy to VM \u2014 migrate to container platform",

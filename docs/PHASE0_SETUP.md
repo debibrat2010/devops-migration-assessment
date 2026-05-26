@@ -256,6 +256,9 @@ After `iac/terraform/deploy.sh` creates Key Vault:
 |----------|----------------|
 | `ACR_LOGIN_SERVER` | `acrmigdevaa87c040.azurecr.io` |
 | `APP_SERVICE_DEV_NAME` | `mig-dev-aa87c040-petclinic` |
+| `acrServiceConnection` | Plain variable: `acr-migration-sc` (Docker Registry SC name — not a KV secret) |
+
+Also create **Docker Registry** service connection `acr-migration-sc` → ACR `acrmigdevaa87c040` (see ACR connection below).
 
 Optional KV secret refs later: `SPRING_DATASOURCE_PASSWORD` — never plain secrets in YAML
 

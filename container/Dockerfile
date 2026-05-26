@@ -1,11 +1,14 @@
 # Module C — Multi-stage production Dockerfile for Spring PetClinic
 # Build context: repo root (docker build -f container/Dockerfile .)
+# Uses Jammy-based Temurin (arm64 + amd64). Alpine Temurin tags are not available on Apple Silicon.
 
 # --- Build stage: compile + unit tests ---
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM eclipse-temurin:17-jdk AS builder
 WORKDIR /build
 
-RUN apk add --no-cache bash
+RUN apt-get update && apt-get install -y --no-install-recommends bash \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY apps/spring-petclinic/mvnw ./
 COPY apps/spring-petclinic/.mvn .mvn
 COPY apps/spring-petclinic/pom.xml ./
@@ -17,12 +20,15 @@ COPY apps/spring-petclinic/src ./src
 RUN ./mvnw -B test package -DskipTests=false
 
 # --- Runtime stage: minimal JRE, non-root ---
-FROM eclipse-temurin:17-jre-alpine AS runtime
+FROM eclipse-temurin:17-jre AS runtime
 
-RUN addgroup -g 10001 app && adduser -u 10001 -G app -D -h /app app
+RUN apt-get update && apt-get install -y --no-install-recommends wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -g 10001 app && useradd -u 10001 -g app -m -d /app app
+
 WORKDIR /app
 
-COPY --from=builder /build/target/*.jar /app/app.jar
+COPY --from=builder --chown=app:app /build/target/*.jar /app/app.jar
 
 USER app
 EXPOSE 8080
