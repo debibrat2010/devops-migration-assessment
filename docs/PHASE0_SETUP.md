@@ -296,12 +296,12 @@ cd self-hosted-agent && docker build -t ado-selfhosted-agent . && docker run -d 
 
 ### Prod App Service (after dev test)
 
-The prod **pipeline stage** uses `$(APP_SERVICE_PROD_NAME)` from variable group `petclinic-kv-secrets`.
+The prod **pipeline stage** uses `$(appServiceProd)` → `$(app-service-prod-name)` from variable group `petclinic-kv-secrets` (same hyphen naming as dev).
 
 **For the first pipeline run (recommended):**
 
-- Run **Build → Scan → DeployDev** only; prod stage may fail until `APP_SERVICE_PROD_NAME` is set — that is acceptable for an initial test.
-- Or set `APP_SERVICE_PROD_NAME` = `mig-dev-aa87c040-petclinic` temporarily so prod deploys to the same App Service (demo only).
+- Prod KV secret **`app-service-prod-name`** must match a real App Service in Azure (second Terraform apply with `environment=prod`, or demo value = dev app name).
+- Do **not** use `APP_SERVICE_PROD_NAME` unless you add a plain Library variable with that exact name.
 
 **What the assessment actually requires:**
 
@@ -318,7 +318,7 @@ cd iac/terraform
 cp terraform.tfvars terraform.tfvars.prod
 # Edit: environment = "prod"
 terraform apply -var-file=terraform.tfvars.prod
-# Add APP_SERVICE_PROD_NAME from new terraform output to petclinic-kv-secrets
+# Add Key Vault secret app-service-prod-name from terraform output; link in petclinic-kv-secrets
 ```
 
 ---
@@ -339,7 +339,7 @@ terraform apply -var-file=terraform.tfvars.prod
 | Action | Details |
 |--------|---------|
 | Run main pipeline | [`pipelines/azure-pipelines.yml`](../pipelines/azure-pipelines.yml) — Build → Scan → DeployDev |
-| Optional prod stack | Second `terraform apply` with `environment=prod`; set `APP_SERVICE_PROD_NAME` |
+| Optional prod stack | Second `terraform apply` with `environment=prod`; KV secret `app-service-prod-name` |
 | Modules A–D local | Docker compose, pipeline inventory, Jira analyzer (can run anytime) |
 | Presentation | Screenshots from pipeline runs → `docs/final-presentation-outline.md` |
 

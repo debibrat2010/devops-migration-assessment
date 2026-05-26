@@ -22,6 +22,8 @@ variables:
     value: 'rg-migration-assessement'
   - name: appServiceDev
     value: '$(app-service-dev-name)'
+  - name: appServiceProd
+    value: '$(app-service-prod-name)'
   # Docker Registry service connection name (Project Settings → Service connections)
   - name: acrServiceConnection
     value: 'acr-migration-sc'
@@ -77,10 +79,12 @@ stages:
               steps:
                 - template: templates/deploy-appservice-container.yml
                   parameters:
-                    appName: '$(APP_SERVICE_PROD_NAME)'
+                    appName: '$(appServiceProd)'
                     resourceGroup: '$(resourceGroupName)'
                     imageName: '$(acrLoginServer)/$(imageRepository):$(Build.BuildId)'
                 - template: templates/smoke-test.yml
+                  parameters:
+                    healthUrl: 'https://$(appServiceProd).azurewebsites.net/actuator/health'
 
   - stage: Rollback
     displayName: 'Rollback (manual)'
