@@ -3,9 +3,9 @@
     "total_pipelines": 3,
     "high_risk_count": 3,
     "tools": [
-      "GitLab",
       "Jenkins",
-      "Bamboo"
+      "Bamboo",
+      "GitLab"
     ]
   },
   "pipelines": [
