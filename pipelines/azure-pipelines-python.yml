@@ -15,13 +15,12 @@ stages:
     jobs:
       - job: Build
         steps:
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '3.11'
           - script: |
+              python3 --version
+              pip3 --version
               cd apps/python-flask
-              pip install -r requirements.txt
-              python -m compileall .
+              pip3 install -r requirements.txt
+              python3 -m compileall .
             displayName: 'Validate Python app'
           - task: Docker@2
             inputs:
