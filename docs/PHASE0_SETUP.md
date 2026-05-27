@@ -323,6 +323,47 @@ terraform apply -var-file=terraform.tfvars.prod
 
 ---
 
+## App Service container startup (B1 + Spring Boot)
+
+If the site shows **Application Error**, **503**, or **504**, Spring Boot may need longer than the default **230s** container start limit (especially with Application Insights on **B1**).
+
+### Azure Portal (manual)
+
+1. Open [Azure Portal](https://portal.azure.com) → **Resource groups** → `rg-migration-assessement`.
+2. Open **`mig-dev-aa87c040-petclinic`** (Linux container App Service).
+3. Left menu → **Settings** → **Environment variables** (or **Configuration** → **Application settings** on older UI).
+4. Under **App settings**, add or edit:
+
+   | Name | Value |
+   |------|--------|
+   | `WEBSITES_PORT` | `8080` |
+   | `WEBSITES_CONTAINER_START_TIME_LIMIT` | `1200` |
+   | `WEBSITE_HEALTHCHECK_MAXPINGFAILURES` | `10` (optional) |
+
+5. **Save** → confirm **Restart** when prompted.
+6. Wait **5–8 minutes** after restart, then test:  
+   `https://mig-dev-aa87c040-petclinic.azurewebsites.net/actuator/health`
+
+### In code (preferred — survives redeploys)
+
+| Location | What it sets |
+|----------|----------------|
+| [`iac/terraform/main.tf`](../iac/terraform/main.tf) | `WEBSITES_PORT`, `WEBSITES_CONTAINER_START_TIME_LIMIT` in `app_settings` |
+| [`pipelines/templates/deploy-appservice-container.yml`](../pipelines/templates/deploy-appservice-container.yml) | Same settings on every **DeployDev** / **DeployProd** |
+
+Apply Terraform: `cd iac/terraform && terraform apply`  
+Or run the main ADO pipeline (deploy template applies settings automatically).
+
+### One-time CLI (fastest for demos)
+
+```bash
+az webapp config appsettings set -g rg-migration-assessement -n mig-dev-aa87c040-petclinic \
+  --settings WEBSITES_PORT=8080 WEBSITES_CONTAINER_START_TIME_LIMIT=1200 WEBSITE_HEALTHCHECK_MAXPINGFAILURES=10
+az webapp restart -g rg-migration-assessement -n mig-dev-aa87c040-petclinic
+```
+
+---
+
 ## Evidence checklist
 
 | Item | File |

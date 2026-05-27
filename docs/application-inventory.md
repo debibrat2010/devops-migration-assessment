@@ -45,6 +45,12 @@ cd apps/spring-petclinic
 | Dependencies | `requirements.txt` |
 | Azure target | App Service for Containers or ACA |
 
+### Pipeline evidence
+
+- Azure DevOps pipeline: `pipelines/azure-pipelines-python.yml`
+- Run URL: https://dev.azure.com/debibrat2021/migration-assessment/_build/results?buildId=20&view=results
+- Result: Succeeded on `ado-selfhosted-linux`
+
 ---
 
 ## Secondary: Node.js Todo (`apps/todo-nodejs-mongo`)

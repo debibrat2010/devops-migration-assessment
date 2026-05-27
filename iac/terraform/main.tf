@@ -94,6 +94,8 @@ resource "azurerm_linux_web_app" "petclinic" {
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE     = "false"
     WEBSITES_PORT                           = "8080"
+    WEBSITES_CONTAINER_START_TIME_LIMIT     = "1200"
+    WEBSITE_HEALTHCHECK_MAXPINGFAILURES     = "10"
     DOCKER_REGISTRY_SERVER_URL              = "https://${azurerm_container_registry.acr.login_server}"
     APPLICATIONINSIGHTS_CONNECTION_STRING   = azurerm_application_insights.appi.connection_string
     SPRING_PROFILES_ACTIVE                  = "default"

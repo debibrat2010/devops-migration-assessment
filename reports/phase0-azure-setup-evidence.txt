@@ -73,4 +73,9 @@ Prod: same App Service as dev (demo)
 ## Prod deploy note
 app-service-prod-name in KV points to: mig-dev-aa87c040-petclinic (demo — prod environment approval only)
 
+## secondary workload evidence (optional)
+Python pipeline YAML: /pipelines/azure-pipelines-python.yml
+Run URL: https://dev.azure.com/debibrat2021/migration-assessment/_build/results?buildId=20&view=results
+Result: Succeeded on ado-selfhosted-linux (native python3 on ARM self-hosted agent)
+
 

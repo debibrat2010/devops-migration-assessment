@@ -32,19 +32,26 @@ steps:
         IMAGE='${{ parameters.imageName }}'
         REGISTRY="${IMAGE%%/*}"
 
-        az webapp config appsettings set -g "$RG" -n "$APP" \
-          --settings \
-            WEBSITES_PORT=8080 \
-            DOCKER_REGISTRY_SERVER_URL="https://${REGISTRY}"
-
+        # Managed identity for ACR (admin disabled). Clear stale admin creds if present.
         az resource update -g "$RG" \
           --name "$APP" \
           --resource-type Microsoft.Web/sites \
           --set properties.siteConfig.acrUseManagedIdentityCreds=true
 
+        az webapp config appsettings set -g "$RG" -n "$APP" \
+          --settings \
+            WEBSITES_PORT=8080 \
+            WEBSITES_CONTAINER_START_TIME_LIMIT=1200 \
+            WEBSITE_HEALTHCHECK_MAXPINGFAILURES=10 \
+            DOCKER_REGISTRY_SERVER_URL="https://${REGISTRY}" \
+            DOCKER_REGISTRY_SERVER_USERNAME="" \
+            DOCKER_REGISTRY_SERVER_PASSWORD=""
+
         az webapp config container set -g "$RG" -n "$APP" \
-          --docker-custom-image-name "$IMAGE" \
-          --docker-registry-server-url "https://${REGISTRY}"
+          --container-image-name "$IMAGE" \
+          --container-registry-url "https://${REGISTRY}"
 
         az webapp restart -g "$RG" -n "$APP"
-        echo "Restarted $APP with $IMAGE (ACR managed identity + WEBSITES_PORT=8080)"
+        echo "Restarted $APP with $IMAGE (ACR MI + WEBSITES_PORT=8080, 20m container start limit)"
+        echo "Waiting 90s for container pull before downstream smoke test..."
+        sleep 90
