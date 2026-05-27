@@ -23,4 +23,9 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/actuator/health
 docker compose -f docker-compose.local.yml start postgres
 ```
 
+Evidence files (Module D):
+
+- `reports/module-d-baseline-up.json` — health UP via ingress
+- `reports/module-d-failure-db-down.txt` — postgres stopped (failure-mode)
+
 Capture screenshots of health 200 and failure responses for final presentation.

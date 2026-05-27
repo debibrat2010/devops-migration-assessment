@@ -66,5 +66,5 @@ cd iac/terraform
 
 | File | When |
 |------|------|
-| `reports/terraform-plan.txt` | After `terraform plan` |
-| `reports/terraform-outputs.json` | After `terraform apply` |
+| `reports/module-e-terraform-plan.txt` | After `terraform plan` |
+| `reports/module-e-terraform-outputs.json` | After `terraform apply` |

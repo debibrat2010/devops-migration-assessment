@@ -1,4 +1,4 @@
-# Module F — Smoke test for self-hosted agent pool
+# Module F — Smoke test for self-hosted agent pool  - Optional as main pipeline already uses all components via agent pool
 trigger: none
 
 pool:

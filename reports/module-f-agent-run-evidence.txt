@@ -1,0 +1,12 @@
+# Self-hosted agent evidence (Module F)
+
+Pool: ado-selfhosted-linux
+Agent: ado-agent (Docker on Mac)
+
+Main pipeline: pipelines/azure-pipelines.yml
+Main run URL: https://dev.azure.com/debibrat2021/migration-assessment/_build
+Pool on run: ado-selfhosted-linux
+
+Capabilities evidenced by main run: docker buildx (amd64), ACR push, Trivy, az webapp deploy.
+
+Smoke pipeline (optional): pipelines/azure-pipelines-agent-smoke.yml

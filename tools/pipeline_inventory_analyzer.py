@@ -188,7 +188,7 @@ MAPPING_ROWS = [
 
 def write_csv(records: list[PipelineRecord], mapping: list[dict[str, str]]) -> None:
     REPORTS.mkdir(parents=True, exist_ok=True)
-    inv_csv = REPORTS / "pipeline_inventory.csv"
+    inv_csv = REPORTS / "module-b-pipeline-inventory.csv"
     with inv_csv.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(
             f,
@@ -206,7 +206,7 @@ def write_csv(records: list[PipelineRecord], mapping: list[dict[str, str]]) -> N
             row["risk_notes"] = "; ".join(row["risk_notes"])
             w.writerow(row)
 
-    map_csv = REPORTS / "migration_mapping_matrix.csv"
+    map_csv = REPORTS / "module-b-migration-mapping-matrix.csv"
     with map_csv.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(
             f,
@@ -235,12 +235,12 @@ def main() -> None:
         "migration_mapping": MAPPING_ROWS,
     }
     REPORTS.mkdir(parents=True, exist_ok=True)
-    out_json = REPORTS / "pipeline_inventory.json"
+    out_json = REPORTS / "module-b-pipeline-inventory.json"
     out_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     write_csv(records, MAPPING_ROWS)
     print(f"Wrote {out_json}")
-    print(f"Wrote {REPORTS / 'pipeline_inventory.csv'}")
-    print(f"Wrote {REPORTS / 'migration_mapping_matrix.csv'}")
+    print(f"Wrote {REPORTS / 'module-b-pipeline-inventory.csv'}")
+    print(f"Wrote {REPORTS / 'module-b-migration-mapping-matrix.csv'}")
 
 
 if __name__ == "__main__":

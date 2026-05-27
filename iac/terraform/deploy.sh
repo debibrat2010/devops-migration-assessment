@@ -13,14 +13,14 @@ echo "=== Terraform init ==="
 terraform init -input=false
 
 echo "=== Terraform plan ==="
-terraform plan -out=tfplan -input=false 2>&1 | tee "$REPORTS_DIR/terraform-plan.txt"
+terraform plan -out=tfplan -input=false 2>&1 | tee "$REPORTS_DIR/module-e-terraform-plan.txt"
 
 echo ""
 read -r -p "Apply this plan? [y/N] " ans
 if [[ "$ans" =~ ^[Yy]$ ]]; then
   terraform apply -input=false tfplan
-  terraform output -json | tee "$REPORTS_DIR/terraform-outputs.json"
-  echo "Outputs saved to reports/terraform-outputs.json"
+  terraform output -json | tee "$REPORTS_DIR/module-e-terraform-outputs.json"
+  echo "Outputs saved to reports/module-e-terraform-outputs.json"
 else
   echo "Skipped apply. Run: terraform apply tfplan"
 fi

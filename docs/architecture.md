@@ -110,7 +110,7 @@ See `k8s/networkpolicy-egress.yaml` for AKS enforcement.
 ## Large-scale migration factory
 
 1. **Discover** — `pipeline_inventory_analyzer.py` across estate
-2. **Classify** — `migration_mapping_matrix.csv` decisions
+2. **Classify** — `module-b-migration-mapping-matrix.csv` decisions
 3. **Convert** — reusable templates in `pipelines/templates/`
 4. **Validate** — dev deploy + smoke per wave
 5. **Cutover** — `cutover-plan.md` per application wave

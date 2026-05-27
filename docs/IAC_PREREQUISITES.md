@@ -10,7 +10,7 @@ Use this before running [`iac/terraform/deploy.sh`](../iac/terraform/deploy.sh).
 | Subscription name | Azure subscription 1 |
 | Resource group | `rg-migration-assessement` |
 | Region | `southeastasia` |
-| Local tools | `az`, `terraform` — see `reports/local-toolchain-evidence.txt` |
+| Local tools | `az`, `terraform` — see `reports/phase0-local-toolchain-evidence.txt` |
 
 ## Required from you
 
@@ -82,9 +82,9 @@ export LOCATION="southeastasia"
 
 | File | Content |
 |------|---------|
-| `reports/terraform-plan.txt` | `terraform plan` |
-| `reports/terraform-outputs.json` | `terraform output -json` |
-| `reports/azure-setup-evidence.txt` | Subscription + connection notes |
+| `reports/module-e-terraform-plan.txt` | `terraform plan` |
+| `reports/module-e-terraform-outputs.json` | `terraform output -json` |
+| `reports/phase0-azure-setup-evidence.txt` | Subscription + connection notes |
 
 ## Replacing a prior Bicep-only RG
 

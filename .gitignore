@@ -37,7 +37,8 @@ self-hosted-agent/.agent/
 # Reports generated at runtime (keep committed samples; ignore large temp)
 reports/trivy-*.json
 reports/*.log
-reports/terraform-outputs.json
+reports/module-e-terraform-outputs.json
+!reports/module-a-maven-test.log
 iac/terraform/tfplan
 
 # Azure local

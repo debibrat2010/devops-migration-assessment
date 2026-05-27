@@ -1,6 +1,6 @@
 # Azure setup evidence — Phase 0 (complete)
 
-Last updated: 2026-05-26
+Last updated: 2026-05-27
 
 ## 0.1 GitHub candidate repository
 GitHub repo URL: https://github.com/debibrat2010/devops-migration-assessment
@@ -20,8 +20,8 @@ Project name: migration-assessment
 
 ## 0.4 Service connection
 Service connection name: azure-migration-sc
-Connection type: Workload Identity Federation (OIDC) — Automatic wizard
-Service connection scope: Resource group rg-migration-assessement (or subscription)
+Connection type: Workload Identity Federation (OIDC)
+Service connection scope: Resource group rg-migration-assessement
 Verify status: Succeeded
 
 ## 0.5 Pipeline linked to GitHub
@@ -33,8 +33,9 @@ Smoke pipeline YAML: /pipelines/azure-pipelines-agent-smoke.yml
 ## 0.6b Variable group
 Variable group name: petclinic-kv-secrets
 Variables configured:
-  ACR_LOGIN_SERVER = acrmigdevaa87c040.azurecr.io
-  APP_SERVICE_DEV_NAME = mig-dev-aa87c040-petclinic
+  acr-login-server = acrmigdevaa87c040.azurecr.io
+  app-service-dev-name = mig-dev-aa87c040-petclinic
+  app-service-prod-name = mig-dev-aa87c040-petclinic
 Key Vault (optional link): kvmigdevaa87c040
 ACR Docker service connection (optional): acr-migration-sc
 
@@ -42,8 +43,8 @@ ACR Docker service connection (optional): acr-migration-sc
 Agent pool name: ado-selfhosted-linux
 Agent container: ado-agent (Docker on Mac, ARM64 image)
 AGENT_ALLOW_RUNASROOT: true (required for Docker socket in container)
-Smoke pipeline: azure-pipelines-agent-smoke.yml — succeeded
-Agent evidence log: reports/agent-run-evidence.txt (add run URL if saved)
+Smoke pipeline: azure-pipelines-agent-smoke.yml
+Agent evidence log: reports/module-f-agent-run-evidence.txt
 
 ## 0.8 Environments
 Environment dev: Created — no approval required
@@ -58,10 +59,18 @@ Key Vault name: kvmigdevaa87c040
 App Service (dev): mig-dev-aa87c040-petclinic
 App Service URL: https://mig-dev-aa87c040-petclinic.azurewebsites.net
 
-## Prod App Service — deferred until after dev pipeline test
-See docs/PHASE0_SETUP.md section "Prod App Service (after dev test)".
-Assessment requires prod *environment* with approval (Module N) — not necessarily a second Azure App Service for first pipeline run.
-Variable APP_SERVICE_PROD_NAME: not set yet (prod deploy stage will skip/fail until added).
+## Pipeline run evidence (Module G/H)
+Main pipeline: azure-pipelines.yml
+Run URL: https://dev.azure.com/debibrat2021/migration-assessment/_build?definitionId=1&_a=summary
+Image: acrmigdevaa87c040.azurecr.io/petclinic:14
+Architecture: linux/amd64 (buildx on self-hosted agent)
 
-## Phase 0 status: COMPLETE
-Ready for: first run of pipelines/azure-pipelines.yml (Build → Scan → DeployDev), then optional second Terraform stack for prod App Service.
+Health checks:
+Dev:  https://mig-dev-aa87c040-petclinic.azurewebsites.net/actuator/health — {"groups":["liveness","readiness"],"status":"UP"}
+HTTP 200
+Prod: same App Service as dev (demo)
+
+## Prod deploy note
+app-service-prod-name in KV points to: mig-dev-aa87c040-petclinic (demo — prod environment approval only)
+
+

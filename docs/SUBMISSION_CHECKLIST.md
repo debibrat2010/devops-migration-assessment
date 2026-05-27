@@ -5,9 +5,9 @@
 | Containerized PetClinic | `container/Dockerfile` | Done |
 | Python + Node apps | `apps/python-flask/`, `apps/todo-nodejs-mongo/` | Done |
 | docker-compose + nginx + mock egress | `container/docker-compose.local.yml` | Done |
-| Pipeline inventory | `reports/pipeline_inventory.json` | Generated |
-| Migration mapping matrix | `reports/migration_mapping_matrix.csv` | Generated |
-| Jira readiness report | `reports/jira_readiness_report.md` | Generated |
+| Pipeline inventory | `reports/module-b-pipeline-inventory.json` | Generated |
+| Migration mapping matrix | `reports/module-b-migration-mapping-matrix.csv` | Generated |
+| Jira readiness report | `reports/module-m-jira-readiness-report.md` | Generated |
 | ADO pipelines + templates | `pipelines/` | Done |
 | Self-hosted agent | `self-hosted-agent/` | Done |
 | GHA alternate | `pipelines/github-actions/` | Done |

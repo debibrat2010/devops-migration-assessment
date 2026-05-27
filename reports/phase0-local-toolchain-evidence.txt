@@ -13,7 +13,7 @@ OK  docker daemon: running
 === Done ===
 
 # Phase 0.6 — Local toolchain: COMPLETE (verified 2026-05-26)
-# Command: ./scripts/check-prerequisites.sh | tee reports/local-toolchain-evidence.txt
+# Command: ./scripts/check-prerequisites.sh | tee reports/phase0-local-toolchain-evidence.txt
 
 # Azure CLI login (Phase 0.2)
 # Subscription: Azure subscription 1

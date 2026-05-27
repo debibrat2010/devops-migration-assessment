@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPORT = ROOT / "jira-export"
-REPORT = ROOT / "reports" / "jira_readiness_report.md"
+REPORT = ROOT / "reports" / "module-m-jira-readiness-report.md"
 
 
 def read_csv(name: str) -> list[dict[str, str]]:

@@ -7,12 +7,12 @@
 - [ ] Key Vault and variable group `petclinic-kv-secrets` linked
 - [ ] Self-hosted pool `ado-selfhosted-linux` online
 - [ ] Pipeline inventory generated (`tools/pipeline_inventory_analyzer.py`)
-- [ ] Jira readiness report reviewed (`reports/jira_readiness_report.md`)
+- [ ] Jira readiness report reviewed (`reports/module-m-jira-readiness-report.md`)
 
 ## Pipeline migration steps (per application)
 
 1. Import legacy pipeline into `legacy-ci/` reference folder.
-2. Map stages using `reports/migration_mapping_matrix.csv`.
+2. Map stages using `reports/module-b-migration-mapping-matrix.csv`.
 3. Create ADO pipeline from `pipelines/azure-pipelines.yml` or app-specific YAML.
 4. Run on self-hosted pool if private network or Docker socket required.
 5. Validate dev deployment and smoke test.

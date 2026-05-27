@@ -35,7 +35,7 @@ git add -A && git commit -m "Initial assessment submission"
 git push -u origin main
 ```
 
-**Record:** GitHub repo URL in `reports/azure-setup-evidence.txt`
+**Record:** GitHub repo URL in `reports/phase0-azure-setup-evidence.txt`
 
 ---
 
@@ -60,7 +60,7 @@ az account show -o table
 
 1. https://dev.azure.com — create org (e.g. `yourname-migration`).
 2. Create project: `migration-assessment`.
-3. Record **Organization URL** and **Project name** in `reports/azure-setup-evidence.txt`.
+3. Record **Organization URL** and **Project name** in `reports/phase0-azure-setup-evidence.txt`.
 
 ---
 
@@ -134,7 +134,7 @@ Until ACR exists, skip this; builds can run without push to ACR.
 
 ### Record evidence
 
-Update `reports/azure-setup-evidence.txt`:
+Update `reports/phase0-azure-setup-evidence.txt`:
 
 ```text
 Service connection name: azure-migration-sc
@@ -229,10 +229,10 @@ docker version   # must show Client and Server
 ### Verify all tools
 
 ```bash
-./scripts/check-prerequisites.sh | tee reports/local-toolchain-evidence.txt
+./scripts/check-prerequisites.sh | tee reports/phase0-local-toolchain-evidence.txt
 ```
 
-Expect all **OK** and `docker daemon: running`. See [reports/local-toolchain-evidence.txt](../reports/local-toolchain-evidence.txt) for a completed example.
+Expect all **OK** and `docker daemon: running`. See [reports/phase0-local-toolchain-evidence.txt](../reports/phase0-local-toolchain-evidence.txt) for a completed example.
 
 ### Local PetClinic smoke test (optional)
 
@@ -283,7 +283,7 @@ cd self-hosted-agent && docker build -t ado-selfhosted-agent . && docker run -d 
 ```
 
 3. Run smoke pipeline: `pipelines/azure-pipelines-agent-smoke.yml`
-4. Save log to `reports/agent-run-evidence.txt`
+4. Save log to `reports/module-f-agent-run-evidence.txt`
 
 ---
 
@@ -327,10 +327,10 @@ terraform apply -var-file=terraform.tfvars.prod
 
 | Item | File |
 |------|------|
-| Subscription ID, ADO org URL | `reports/azure-setup-evidence.txt` |
-| Service connection + verify | `reports/azure-setup-evidence.txt` |
-| Local toolchain check | `reports/local-toolchain-evidence.txt` |
-| Agent pool smoke run | `reports/agent-run-evidence.txt` |
+| Subscription ID, ADO org URL | `reports/phase0-azure-setup-evidence.txt` |
+| Service connection + verify | `reports/phase0-azure-setup-evidence.txt` |
+| Local toolchain check | `reports/phase0-local-toolchain-evidence.txt` |
+| Agent pool smoke run | `reports/module-f-agent-run-evidence.txt` |
 
 ---
 

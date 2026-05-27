@@ -24,8 +24,8 @@ az group wait --name "$RG" --deleted 2>/dev/null || sleep 30
 echo "=== Terraform init + apply ==="
 cd "$SCRIPT_DIR"
 terraform init -input=false
-terraform plan -out=tfplan -input=false | tee "$REPORTS_DIR/terraform-plan.txt"
+terraform plan -out=tfplan -input=false | tee "$REPORTS_DIR/module-e-terraform-plan.txt"
 terraform apply -input=false -auto-approve tfplan
-terraform output -json | tee "$REPORTS_DIR/terraform-outputs.json"
+terraform output -json | tee "$REPORTS_DIR/module-e-terraform-outputs.json"
 
-echo "=== Done. Outputs in reports/terraform-outputs.json ==="
+echo "=== Done. Outputs in reports/module-e-terraform-outputs.json ==="

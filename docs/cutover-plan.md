@@ -35,7 +35,7 @@ Wave 1: PetClinic monolith + CI/CD to Azure DevOps + App Service for Containers.
 
 ## Jira Cloud cutover (parallel track)
 
-See `reports/jira_readiness_report.md` waves 1–3.
+See `reports/module-m-jira-readiness-report.md` waves 1–3.
 
 ## Rollback trigger
 

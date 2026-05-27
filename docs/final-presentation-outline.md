@@ -10,8 +10,8 @@ Export to PDF/PPTX for submission as `docs/final-presentation.pdf` or `.pptx`.
 ## 2. Pipeline inventory and complexity (5 min)
 
 - Demo: `tools/pipeline_inventory_analyzer.py` output
-- Show `reports/pipeline_inventory.json` — 3 high-risk pipelines
-- Migration mapping highlights from `migration_mapping_matrix.csv`
+- Show `reports/module-b-pipeline-inventory.json` — 3 high-risk pipelines
+- Migration mapping highlights from `module-b-migration-mapping-matrix.csv`
 
 ## 3. Dockerized monolith + ingress/egress (5 min)
 
@@ -39,7 +39,7 @@ Export to PDF/PPTX for submission as `docs/final-presentation.pdf` or `.pptx`.
 
 ## 7. Jira Cloud readiness (5 min)
 
-- `reports/jira_readiness_report.md` waves
+- `reports/module-m-jira-readiness-report.md` waves
 - App compatibility risks
 - Integration with ADO work items
 
